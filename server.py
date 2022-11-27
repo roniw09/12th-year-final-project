@@ -7,7 +7,7 @@ LINE = r'\r\n'
 
 def build_answer(fields):
     if '/' in fields:
-        html_file = open('login.html')
+        html_file = open('home.html')
         data = '\n'.join(x for x in html_file.readlines())
         length = str(len(str(html_file)))
         answer = 'HTTP/1.1 200 OK' + LINE 
@@ -24,7 +24,7 @@ def handle_client(c_sock, addres, id):
         data = c_sock.recv(1024).decode()
         print(data)
         fields = data.split('\r\n')[0].split()
-        response = build_answer(fields)
+        response = build_answer(fields) 
         if response is not None:
             c_sock.send(response.encode())
     pass
