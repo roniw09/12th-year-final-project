@@ -5,18 +5,37 @@ IP_PORT = ('0.0.0.0', 80)
 clients = []
 LINE = r'\r\n'
 
+
+def website_request(file_name): 
+    if file_name == '/':
+        file_name = '/home.html'
+    print('!!!!!!!!!!!!!!!!!!!!!!!!!!' + file_name)
+    html_file = open('pages' + file_name)
+    data = '\n'.join(x for x in html_file.readlines())
+    length = str(len(str(html_file)))
+    answer = 'HTTP/1.1 200 OK' + LINE 
+    answer += 'Content-Length: ' + length + LINE
+    answer  += 'Content-Type: text/html; charset=utf-8' + LINE 
+    answer += LINE
+    answer += data
+    html_file.close()
+    return answer
+
+
+def send_assests(webpage):
+    pass
+
+
 def build_answer(fields):
-    if '/' in fields:
-        html_file = open('home.html')
-        data = '\n'.join(x for x in html_file.readlines())
-        length = str(len(str(html_file)))
-        answer = 'HTTP/1.1 200 OK' + LINE 
-        answer += 'Content-Length: ' + length + LINE
-        answer  += 'Content-Type: text/html; charset=utf-8' + LINE 
-        answer += LINE
-        answer += data
-        html_file.close()   
-        return answer
+    ans = ''
+    pic = ''
+    if '?' in fields:
+        pass
+    if len(fields) > 1 and '/' in fields[1] and '?' not in fields[1]:
+        ans = website_request(fields[1])
+        pic = send_assests(fields[1])
+    return ans
+
 
 def handle_client(c_sock, addres, id):
 
