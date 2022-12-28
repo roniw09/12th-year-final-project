@@ -8,34 +8,40 @@ current_page = ''
 user = ['guest']
 
 
-def file_contetn_type(file_name):
+def file_content_type(file_name):
     path = ''
     content = ''
+    if file_name == '/':
+        file_name = '/home.html' 
     f_type = file_name.split('.')[-1]
-    if os.path.exists(f'page{file_name}'):
-        path = f'page{file_name}'
+    file_name = '\\' + file_name[1:]
+    print(file_name)
+    if os.path.exists(f'pages{file_name}'):
+        path = f'pages{file_name}'
     elif os.path.exists(f'assests{file_name}'):
         path = f'assests{file_name}'
     if path == '':
         return 'Err'
-    with open(path) as file:
-        content += '\n'.join(x for x in file.readlines())
-    return f_type, content
+    c_file = open(path)
+    content += '\n'.join(x for x in c_file.readlines())
+    c_file.close()
+    return [f_type, content] 
 
 
 def website_request(file_name): 
-    if file_name == '/':
-        file_name = '/home.html'
-    f_type, file = file_contetn_type(file_name)
-    if not file:
+    print(file_name)
+    file_content = file_content_type(file_name)
+    print(file_content  )
+    if 'Err' in file_content:
         return ''
-    length = str(len(str(file)))
+    length = str(len(str(file_content[1])))
     answer = 'HTTP/1.1 200 OK' + LINE 
     answer += 'Content-Length: ' + length + LINE
-    answer  += f'Content-Type: {type}; charset=utf-8' + LINE 
+    answer  += f'Content-Type: {file_content[0]}; charset=utf-8' + LINE 
     answer += 'Set-Cookie: name=3' + LINE
     answer += LINE
-    answer += data    
+    answer += file_content[1]  
+    print('!!!!!!!!!!!!' + answer)  
     return answer
 
 
