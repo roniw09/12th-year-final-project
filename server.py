@@ -59,13 +59,17 @@ def build_answer(fields):
     if fields[0] == 'GET':
         if '?' in fields[1]:
             print("entered form")
+            web = fields[1].split('?')[0]
             fields = fields[1].split('?')[1].split('=')
             username = fields[1].split('&')[0]
             password = fields[2]
             print("!!!!!!!!!!!!!!!")
-            validate_user([username,password])
-            return
-        if len(fields) > 1 and '/' in fields[1] and '?' not in fields[1]:
+            res = validate_user([username,password])
+            if res == 'UserErr':
+                return res
+            print(web)
+            fields = ['', web]
+        if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
             # pic = send_assests(fields[1])
     return ans
