@@ -1,4 +1,21 @@
-<html>
+import webbrowser
+
+HEADER = "<!DOCTYPE html>"
+
+
+class CreateClientPages:
+
+    def clear_page(page):
+        """
+        clear last page
+        """
+        with open(page, 'w') as current_page:
+            current_page.truncate(0)
+
+    def validated_appraiser_page(uname, psw):
+        p_name = 'pages/appraiserSpace.html'
+        with open (p_name, 'w') as current_page:
+            page = """<html>
                 <!--how will the page look-->
                 <style>
                     .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
@@ -7,7 +24,8 @@
                 </style>
 
                 <meta charset="utf-8">
-            
+            """
+            page += f"""
                 <!--header-->
                 <head>
                     <title>יובי</title>    
@@ -25,8 +43,9 @@
                 </body>
                 <script>
                     <!--document.cookie = -->
-                    document.cookie = "username = steve; type = appriaser;"
+                    document.cookie = "username = {uname}; type = appriaser;"
                     let x = document.cookie
                     console.log(x)
                 </script>
-            </html>
+            </html>"""
+            current_page.write(page)

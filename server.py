@@ -1,5 +1,6 @@
 import socket, threading, os
 from ORM import *
+from createPages import CreateClientPages
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
@@ -67,6 +68,7 @@ def build_answer(fields):
             res = validate_user([username,password])
             if res == 'UserErr':
                 return res
+            CreateClientPages.validated_appraiser_page(username, password)
             print(web)
             fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
