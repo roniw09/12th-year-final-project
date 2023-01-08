@@ -1,5 +1,5 @@
 import socket, threading, os
-from tcp_by_size import *
+from ORM import *
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
@@ -38,18 +38,17 @@ def website_request(file_name):
     answer = 'HTTP/1.1 200 OK' + LINE 
     answer += 'Content-Length: ' + length + LINE
     answer  += f'Content-Type: {file_content[0]}; charset=utf-8' + LINE 
-    answer += 'Set-Cookie: name=3' + LINE
     answer += LINE
     answer += file_content[1]  
-    print('!!!!!!!!!!!!' + answer)  
     return answer
 
 
 def validate_user(params):
     global user
-    if params > 1:
+    if len(params)> 1:
         user[0] = 'ap'
-        # appraiser = Appraiser
+        data = ORM.get_employee_data(params[0], params[1])
+        print(data)
     else:
         user[0] = 'cli'
     
@@ -57,11 +56,18 @@ def validate_user(params):
 def build_answer(fields):
     ans = ''
     pic = ''
-    if '?' in fields:
-        pass
-    if len(fields) > 1 and '/' in fields[1] and '?' not in fields[1]:
-        ans = website_request(fields[1])
-        # pic = send_assests(fields[1])
+    if fields[0] == 'GET':
+        if '?' in fields[1]:
+            print("entered form")
+            fields = fields[1].split('?')[1].split('=')
+            username = fields[1].split('&')[0]
+            password = fields[2]
+            print("!!!!!!!!!!!!!!!")
+            validate_user([username,password])
+            return
+        if len(fields) > 1 and '/' in fields[1] and '?' not in fields[1]:
+            ans = website_request(fields[1])
+            # pic = send_assests(fields[1])
     return ans
 
 
@@ -70,6 +76,7 @@ def handle_client(c_sock, addres, id):
     data = c_sock.recv(1024).decode()
     print(data)
     fields = data.split('\r\n')[0].split()
+    print(fields)
     response = build_answer(fields) 
     if response is not None:
         c_sock.send(response.encode())
@@ -81,7 +88,7 @@ def main():
     s.bind(IP_PORT)
     s.listen(20)
     i = 0
-    while i < 4:
+    while i < 20:
         c, add = s.accept()
         print("connected")
         t = threading.Thread(target=handle_client, args=(c,add, i))
