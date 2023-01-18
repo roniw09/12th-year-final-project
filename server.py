@@ -52,26 +52,33 @@ def validate_user(params):
         print(data)
     else:
         user[0] = 'cli'
-    
+
+
+def extract_answer(data):
+    web = data.split('?')[0]
+    fields = data.split('?')[1].split('=')
+    username = fields[1].split('&')[0]
+    password = fields[2] 
+    return [username, password], web  
 
 def build_answer(fields):
     ans = ''
     pic = ''
     if fields[0] == 'GET':
         if '?' in fields[1]:
-            print("entered form")
-            web = fields[1].split('?')[0]
-            fields = fields[1].split('?')[1].split('=')
-            username = fields[1].split('&')[0]
-            password = fields[2]
-            print("!!!!!!!!!!!!!!!")
-            res = validate_user([username,password])
-            if res == 'UserErr':
-                return res
-            if user[0] == 'ap':
-                CreateClientPages.validated_appraiser_page(username, password)
-            print(web)
-            fields = ['', web]
+            if 'uname' in fields[1]:
+                details, web = extract_answer(fields[1])
+                res = validate_user(details)
+                if res == 'UserErr':
+                    return res
+                if user[0] == 'ap':
+                    CreateClientPages.validated_appraiser_page(details[0], details[1])
+                print(web)
+                fields = ['', web]
+            elif 'number' in fields[1]:
+                ans, web = extract_answer(fields[1])
+                phone = ans[0] + '-' + ans[1]
+                print(f'!!!!!!!!!!!!! {phone} !!!!!!!!!!!!!')
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
             # pic = send_assests(fields[1])
