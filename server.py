@@ -16,7 +16,6 @@ def file_content_type(file_name):
         file_name = '/home.html' 
     f_type = file_name.split('.')[-1]
     file_name = '\\' + file_name[1:]
-    print(file_name)
     if os.path.exists(f'pages{file_name}'):
         path = f'pages{file_name}'
     elif os.path.exists(f'assests{file_name}'):
@@ -30,9 +29,7 @@ def file_content_type(file_name):
 
 
 def website_request(file_name): 
-    print(file_name)
     file_content = file_content_type(file_name)
-    print(file_content  )
     if 'Err' in file_content:
         return ''
     length = str(len(str(file_content[1])))
@@ -49,9 +46,11 @@ def validate_user(params):
     if len(params)> 1:
         user[0] = 'ap'
         data = ORM.get_employee_data(params[0], params[1])
-        print(data)
     else:
         user[0] = 'cli'
+        data = ORM.get_client_data(params[0])
+    return data
+
 
 
 def extract_answer(data):
@@ -66,31 +65,25 @@ def build_answer(fields):
     pic = ''
     if fields[0] == 'GET':
         if '?' in fields[1]:
-            if 'uname' in fields[1]:
+            if 'uname' in fields[1] or 'number' in fields[1]:
                 details, web = extract_answer(fields[1])
                 res = validate_user(details)
                 if res == 'UserErr':
                     return res
                 if user[0] == 'ap':
                     CreateClientPages.validated_appraiser_page(details[0], details[1])
-                print(web)
+                if user[0] == 'cli':
+                    CreateClientPages.validated_client_page(res)
                 fields = ['', web]
-            elif 'number' in fields[1]:
-                ans, web = extract_answer(fields[1])
-                phone = ans[0] + '-' + ans[1]
-                print(f'!!!!!!!!!!!!! {phone} !!!!!!!!!!!!!')
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
-            # pic = send_assests(fields[1])
     return ans
 
 
 def handle_client(c_sock, addres, id):
     i = 0
     data = c_sock.recv(1024).decode()
-    print(data)
     fields = data.split('\r\n')[0].split()
-    print(fields)
     response = build_answer(fields) 
     if response is not None:
         c_sock.send(response.encode())
