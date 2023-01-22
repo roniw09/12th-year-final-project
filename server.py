@@ -1,6 +1,6 @@
 import socket, threading, os
 from ORM import *
-from createPages import CreateClientPages
+from createPages import CreatePages
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
@@ -43,12 +43,12 @@ def website_request(file_name):
 
 def validate_user(params):
     global user
-    if len(params)> 1:
+    if type(params) == type([]):
         user[0] = 'ap'
         data = ORM.get_employee_data(params[0], params[1])
     else:
         user[0] = 'cli'
-        data = ORM.get_client_data(params[0])
+        data = ORM.get_client_data(params)
     return data
 
 
@@ -67,13 +67,17 @@ def build_answer(fields):
         if '?' in fields[1]:
             if 'uname' in fields[1] or 'number' in fields[1]:
                 details, web = extract_answer(fields[1])
+                if '05' in details[0]:
+                    details = details[0] + '-' + details[1]
+                print(details, type(details))
                 res = validate_user(details)
-                if res == 'UserERR':
+                if res == 'ERR1':
                     web = '/Error.html'
                 elif user[0] == 'ap':
-                    CreateClientPages.validated_appraiser_page(details[0], details[1])
+                    CreatePages.validated_appraiser_page(details[0], details[1])
                 elif user[0] == 'cli':
-                    CreateClientPages.validated_client_page(res)
+                    print('in client', res)
+                    CreatePages.validated_client_page(res)
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])

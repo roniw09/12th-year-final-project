@@ -18,7 +18,9 @@
 
     <!--header-->
     <head>
-        <title>ERROR</title>    
+        <title>ERROR</title>
+        <a href="home.html">דף הבית</a>
+            
     </head>
     <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
     <body>
@@ -27,4 +29,14 @@
             <h1>ERROR</h1>
         </div>
     </body>
+    <script>
+        if (document.cookie == null || document.cookie.startsWith('05')){
+            document.cookie = "username=anonymous; type=guest";
+            let x = document.cookie;
+            console.log("!!!!!!!!");
+            console.log(x);
+            console.log("!!!!!!!!");
+        }
+        
+    </script>
 </html>

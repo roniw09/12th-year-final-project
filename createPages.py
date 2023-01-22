@@ -3,7 +3,7 @@ import webbrowser
 HEADER = "<!DOCTYPE html>"
 
 
-class CreateClientPages:
+class CreatePages:
 
     def clear_page(page):
         """
@@ -51,6 +51,7 @@ class CreateClientPages:
             current_page.write(page)
     
     def validated_client_page(name):
+        print(name)
         p_name = 'pages/clientSpace.html'
         with open (p_name, 'w') as current_page:
             page = """<html>
