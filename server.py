@@ -68,11 +68,11 @@ def build_answer(fields):
             if 'uname' in fields[1] or 'number' in fields[1]:
                 details, web = extract_answer(fields[1])
                 res = validate_user(details)
-                if res == 'UserErr':
-                    return res
-                if user[0] == 'ap':
+                if res == 'UserERR':
+                    web = '/Error.html'
+                elif user[0] == 'ap':
                     CreateClientPages.validated_appraiser_page(details[0], details[1])
-                if user[0] == 'cli':
+                elif user[0] == 'cli':
                     CreateClientPages.validated_client_page(res)
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
