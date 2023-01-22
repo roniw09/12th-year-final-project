@@ -18,7 +18,6 @@ class ORM:
         cursor.execute(f"""select * from employees where Username = '{uname}' and Password = '{psw}'""")
 
         data = cursor.fetchall()
-        print(f'data: {data}')
         if data != []:
             return data
         return 'ERR1'
@@ -31,7 +30,6 @@ class ORM:
         cursor.execute(f"""select name from clients where phone = '{phone}'""")
 
         data = cursor.fetchall()
-        print(f'data: {data}')
         if data != []:
             return data[0][0]
         return 'ERR1'

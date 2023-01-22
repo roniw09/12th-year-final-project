@@ -69,14 +69,12 @@ def build_answer(fields):
                 details, web = extract_answer(fields[1])
                 if '05' in details[0]:
                     details = details[0] + '-' + details[1]
-                print(details, type(details))
                 res = validate_user(details)
                 if res == 'ERR1':
                     web = '/Error.html'
                 elif user[0] == 'ap':
                     CreatePages.validated_appraiser_page(details[0], details[1])
                 elif user[0] == 'cli':
-                    print('in client', res)
                     CreatePages.validated_client_page(res)
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
