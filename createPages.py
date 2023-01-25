@@ -35,6 +35,7 @@ class CreatePages:
 
                     <div class="nav">
                         <a href="home.html">דף הבית</a>
+                        <a href="disconnet.html">התנתק</a>
                     </div>
                     
                     <div class="main">
@@ -74,6 +75,7 @@ class CreatePages:
 
                     <div class="nav">
                         <a href="home.html">דף הבית</a>
+                        <a href="disconnet.html">התנתק</a>
                     </div>
                     
                     <div class="main">
