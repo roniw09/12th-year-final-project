@@ -14,8 +14,9 @@ class CreatePages:
 
     def validated_appraiser_page(uname, psw):
         p_name = 'pages/appraiserSpace.html'
-        with open (p_name, 'w') as current_page:
-            page = """<html>
+        with open (p_name, 'w', encoding="utf-8") as current_page:
+            page = """<!DOCTYPE html>
+            <html>
                 <!--how will the page look-->
                 <style>
                     .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
@@ -54,8 +55,9 @@ class CreatePages:
     def validated_client_page(name):
         print(name)
         p_name = 'pages/clientSpace.html'
-        with open (p_name, 'w') as current_page:
-            page = """<html>
+        with open (p_name, 'w', encoding="utf-8") as current_page:
+            page = """<!DOCTYPE html>
+                <html>
                 <!--how will the page look-->
                 <style>
                     .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
@@ -79,7 +81,7 @@ class CreatePages:
                     </div>
                     
                     <div class="main">
-                        <h1>HELLO CLIENT</h1>
+                        <h1>HELLO {name}</h1>
                     </div>
                 </body>
                 <script>
