@@ -22,7 +22,7 @@ def file_content_type(file_name):
         path = f'assests{file_name}'
     if path == '':
         return 'Err'
-    c_file = open(path, encoding='utf-8')
+    c_file = open(path)
     content += '\n'.join(x for x in c_file.readlines())
     c_file.close()
     return [f_type, content] 

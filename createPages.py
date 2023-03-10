@@ -40,7 +40,7 @@ class CreatePages:
                     </div>
                     
                     <div class="main">
-                        <h1>HELLO</h1>
+                        <h1>שלום, {uname}</h1>
                     </div>
                 </body>
                 <script>
