@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px;}
+        .main{position: relative; top: 10px; text-align:center;font-family: assistant;}
+    </style>
+
+    <meta charset="utf-8">
+
+    <!--header-->
+    <head>
+        <title>יובי</title>    
+    </head>
+
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <a href="home.html">דף הבית</a>
+        </div>
+        
+        <div class="main">
+            <h1>הכנס את התאריך הנוח לך</h1>
+            <form action="/clientSpace.html">
+                <input type="date" id="selectedDate" name = "selectedDate">
+                <input type="time" id="selectedTime" name = "selectedTime">
+                <button type="submit">שלח</button>
+            </form>
+
+        </div>
+    </body>
+    <script>
+        let x = document.cookie
+        console.log(x)
+    </script>
+</html>

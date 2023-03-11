@@ -69,11 +69,7 @@ class CreatePages:
                             <h1>HELLO {client.GetFirstName()} {client.GetLastName()}</h1>"""
         if client.GetExeTime() == None:
             page += """
-                    <form  action="/clientSpace.html">
-                
-                <input type="date" id="selectedDate" name = "selectedDate">
-                <input type="time" id="selectedTime" name = "selectedTime">
-                <button type="submit">שלח</button>
+                    <a href="setDate.html"><button type="button">קבע תאריך</button></a>
             </form>
             </div>
                     """

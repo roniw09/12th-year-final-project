@@ -87,6 +87,7 @@ def build_answer(fields):
                     CreatePages.validated_client_page(user[1])
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
+            print(fields[1])
             ans = website_request(fields[1])
     return ans
 
