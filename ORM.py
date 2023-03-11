@@ -25,10 +25,13 @@ class ORM:
     def get_client_data(phone):
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
-        print('ORM' + phone)
-        cursor.execute(f"""select Name from Clients where Phone = '{phone}'""")
+        cursor.execute(f"""select * from Clients where Phone = '{phone}'""")
 
         data = cursor.fetchall()
         if data != []:
-            return data[0][0]
+            res = []
+            for x in data[0]:
+                res.append(x)
+            print(res, len(res))
+            return res
         return 'ERR1'

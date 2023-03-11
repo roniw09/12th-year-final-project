@@ -1,12 +1,13 @@
-import socket, threading, os
+import socket, threading, os, datetime
 from ORM import *
+from usersClasses import * 
 from createPages import CreatePages
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
 LINE = r'\r\n'
 current_page = ''
-user = ['guest']
+user = ['guest', '']
 
 
 def file_content_type(file_name):
@@ -22,7 +23,7 @@ def file_content_type(file_name):
         path = f'assests{file_name}'
     if path == '':
         return 'Err'
-    c_file = open(path)
+    c_file = open(path, 'r', encoding="utf-8")
     content += '\n'.join(x for x in c_file.readlines())
     c_file.close()
     return [f_type, content] 
@@ -49,6 +50,9 @@ def validate_user(params):
     else:
         user[0] = 'cli'
         data = ORM.get_client_data(params)
+        add = Address(data[7], data[8], data[9])
+        exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+        user[1] = Client(data[0], data[1], data[2], data[3], data[4], exeTime, add, data[10])
     return data
 
 
@@ -75,7 +79,7 @@ def build_answer(fields):
                 elif user[0] == 'ap':
                     CreatePages.validated_appraiser_page(details[0], details[1])
                 elif user[0] == 'cli':
-                    CreatePages.validated_client_page(res)
+                    CreatePages.validated_client_page(user[1].GetFirstName())
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
