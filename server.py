@@ -15,6 +15,8 @@ def file_content_type(file_name):
     content = ''
     if file_name == '/':
         file_name = '/home.html' 
+    if "favicon" in file_name:
+        return ""
     f_type = file_name.split('.')[-1]
     file_name = '\\' + file_name[1:]
     if os.path.exists(f'pages{file_name}'):
@@ -51,9 +53,12 @@ def validate_user(params):
         user[0] = 'cli'
         data = ORM.get_client_data(params)
         add = Address(data[7], data[8], data[9])
-        exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
-        user[1] = Client(data[0], data[1], data[2], data[3], data[4], exeTime, add, data[10])
-    return data
+        if data[5] != None and data[6] != None:
+            exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+        else:
+            exeTime = None
+        user[1] = Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10])
+    return 'OK'
 
 
 
@@ -79,7 +84,7 @@ def build_answer(fields):
                 elif user[0] == 'ap':
                     CreatePages.validated_appraiser_page(details[0], details[1])
                 elif user[0] == 'cli':
-                    CreatePages.validated_client_page(user[1].GetFirstName())
+                    CreatePages.validated_client_page(user[1])
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])

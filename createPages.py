@@ -1,4 +1,5 @@
 import webbrowser
+from usersClasses import *
 
 HEADER = "<!DOCTYPE html>"
 
@@ -62,13 +63,23 @@ class CreatePages:
             </html>"""
             current_page.write(page)
 
-    def create_client_main(data):
-        return  f"""<div class="main">
-                        <h1>HELLO {data}</h1>
-                    </div>"""
+    def create_client_main(client):
+        print(client)
+        page = f"""<div class="main">
+                            <h1>HELLO {client.GetFirstName()} {client.GetLastName()}</h1>"""
+        if client.GetExeTime() == None:
+            page += """
+                    <form  action="/clientSpace.html">
+                
+                <input type="date" id="selectedDate" name = "selectedDate">
+                <input type="time" id="selectedTime" name = "selectedTime">
+                <button type="submit">שלח</button>
+            </form>
+            </div>
+                    """
+        return page
     
-    def validated_client_page(data):
-        print("name: ",data)
+    def validated_client_page(client):
         p_name = 'pages/clientSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
@@ -88,11 +99,11 @@ class CreatePages:
                         <a href="home.html">דף הבית</a>
                         <a href="disconnet.html">התנתק</a>
                     </div>""" 
-            page += CreatePages.create_client_main(data)
+            page += CreatePages.create_client_main(client)
             page += f"""</body>
                 <script>
                     <!--document.cookie = -->
-                    document.cookie = "username = {data}; type = client;"
+                    document.cookie = "username = {client.GetFirstName()} {client.GetLastName()}; type = client;"
                     let x = document.cookie
                     console.log(x)
                 </script>

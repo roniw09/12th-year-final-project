@@ -55,3 +55,8 @@ class Client:
 
     def SetExeTime(self, exeTime):
         self.exeTime = exeTime
+
+    def __str__(self):
+        return f"""name: {self.fname} {self.lname}\n
+                    index: {self.index}
+                    Exetime: {self.exeTime}"""
