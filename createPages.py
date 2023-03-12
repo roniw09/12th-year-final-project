@@ -3,7 +3,8 @@ from usersClasses import *
 
 HEADER = "<!DOCTYPE html>"
 
-STYLE = """ <style>
+STYLE = """ <!--how will the page look-->
+        <style>
         body {
             background-color: #b2b2b2;
             height: 500px;
@@ -28,12 +29,56 @@ class CreatePages:
         with open(page, 'w') as current_page:
             current_page.truncate(0)
 
+    def validated_user_home(type):
+        p_name = "pages/validatedUserHome.html"
+        with open(p_name, "w", encoding="utf-8") as current_page:
+            nav = ''
+            page =  """<!DOCTYPE html>
+                    <html>""" + STYLE + """<head>
+                    <title>יובי</title>    
+                    </head>
+                    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+                    <body>"""
+            if type =="client":
+               nav = """<div class="nav">
+                         <a href="disconnet.html">התנתק</a>
+                         <a href="clientSpace.html>אזור אישי</a>
+                         </div>"""
+            else:
+                nav = """<div class="nav">
+                         <a href="disconnet.html">התנתק</a>
+                         <a href="appraiserSpace.html>אזור אישי</a>
+                         </div>"""
+            page += nav
+            page += """<div class="main">
+                       </div>
+
+                        <div class="contact">
+                            <h2>פרטי ההתקשרות איתנו</h2>
+                            <p>מספר טלפון: </p>
+                            <p>email: uvgo2014@gmail.com </p>
+                        </div>
+                    </body>
+                    <script>
+                        if (document.cookie == null){
+                            document.cookie = "guest=anonymous";
+                        }
+                        let x = document.cookie;
+                            console.log("!!!!!!!!");
+                            console.log(x);
+                            console.log("!!!!!!!!");
+                            
+                    </script>
+                </html>"""
+            current_page.write(page)
+
+
+
     def validated_appraiser_page(uname, psw):
         p_name = 'pages/appraiserSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
-            <html>
-                <!--how will the page look-->"""
+            <html> """
             
             page += STYLE 
             page += f"""
@@ -56,7 +101,7 @@ class CreatePages:
                 </body>
                 <script>
                     <!--document.cookie = -->
-                    document.cookie = "username = {uname}; type = appriaser;"
+                    document.cookie = "appraiser={uname};"
                     let x = document.cookie
                     console.log(x)
                 </script>
@@ -79,9 +124,7 @@ class CreatePages:
         p_name = 'pages/clientSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
-                <html>
-                <!--how will the page look-->
-            """
+                <html>"""
             page += STYLE + f"""
                 <meta charset="utf-8">
                 <!--header-->
@@ -99,7 +142,7 @@ class CreatePages:
             page += f"""</body>
                 <script>
                     <!--document.cookie = -->
-                    document.cookie = "username = {client.GetFirstName()} {client.GetLastName()}; type = client;"
+                    document.cookie = "client={client.GetFirstName()} {client.GetLastName()};"
                     let x = document.cookie
                     console.log(x)
                 </script>

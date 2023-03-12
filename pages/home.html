@@ -29,7 +29,7 @@
         <div class="nav">
             <b>  
                 <a href="appraiserLogin.html">התחברות סוקר</a>
-                <a href="clientLogin.html">כניסה לאזור הלקוח</a>
+                <a href="clientLogin.html">כניסה לאזור הלקוח</a>                
                 <a href="home.html">פרטי תקשורת</a>
             </b>
             
@@ -39,19 +39,22 @@
         </div>
 
         <div class="contact">
-            <h2>פרטי ההתקשרות איתנו</h2>
+            <h2>צור קשר</h2>
             <p>מספר טלפון: </p>
             <p>email: uvgo2014@gmail.com </p>
         </div>
     </body>
     <script>
-        if (document.cookie == null){
-            document.cookie = "username=anonymous; type=guest";
-        }
+        document.cookie = "guest"="anonymous"
         let x = document.cookie;
-            console.log("!!!!!!!!");
-            console.log(x);
-            console.log("!!!!!!!!");
-            
+        console.log("!!!!!!!!");
+        console.log(x);
+        console.log("!!!!!!!!");
+        
+        var userDifference = cookie != "guest" ? "clientSpace" : "clientLogin";
+        console.log(userDifference);
+
+        
+        
     </script>
 </html>

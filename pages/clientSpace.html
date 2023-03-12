@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-                <html>
-                <!--how will the page look-->
-             <style>
+                <html> <!--how will the page look-->
+        <style>
         body {
             background-color: #b2b2b2;
             height: 500px;
@@ -14,6 +13,21 @@
         .main{position: relative; top: 10px;text-align: center;font-size: 25px; font-family: assistant; }
         .main h1{position: relative; top: 10px; text-align:center;}
         .contact{position: relative;text-align: right;font-size: 25px; font-family: assistant;}
+        .block {
+            display: block;
+            width: 100%;
+            border: none;
+            background-color: #93bc8f;
+            color: black;
+            padding: 14px 28px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .block:hover {
+            background-color: #63865f;
+            color: black;
+        }
     </style>
                 <meta charset="utf-8">
                 <!--header-->
@@ -28,13 +42,13 @@
                         <a href="disconnet.html">התנתק</a>
                     </div><div class="main">
                             <h1>HELLO רוני ויס</h1>
-                    <a href="setDate.html"><button type="button">קבע תאריך</button></a>
+                    <a href="setDate.html"><button class="block">קבע תאריך</button></a>
             </form>
             </div>
                     </body>
                 <script>
                     <!--document.cookie = -->
-                    document.cookie = "username = רוני ויס; type = client;"
+                    document.cookie = "client=רוני ויס;"
                     let x = document.cookie
                     console.log(x)
                 </script>

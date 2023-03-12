@@ -69,7 +69,7 @@ def extract_answer(data):
     password = fields[2] 
     return [username, password], web  
 
-def build_answer(fields):
+def build_answer(fields, cookie):
     ans = ''
     pic = ''
     if fields[0] == 'GET':
@@ -87,7 +87,8 @@ def build_answer(fields):
                     CreatePages.validated_client_page(user[1])
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
-            print(fields[1])
+            # if cookie != "anonymous" :
+            #         web = CreatePages.validated_user_home()
             ans = website_request(fields[1])
     return ans
 
@@ -95,8 +96,10 @@ def build_answer(fields):
 def handle_client(c_sock, addres, id):
     i = 0
     data = c_sock.recv(1024).decode()
+    print("CURRENT REQUEST:\n",data)
+    cookie = data.split('\r\n')[-3].split()
     fields = data.split('\r\n')[0].split()
-    response = build_answer(fields) 
+    response = build_answer(fields, cookie) 
     if response is not None:
         c_sock.send(response.encode())
     c_sock.close()
