@@ -1,9 +1,19 @@
 class Appraiser:
 
-    def __init__(self, username, name, work_days):
-        self.username = username
+    def __init__(self, id, name, skarim):
+        self.id = id
         self.name = name
-        self.work_days = work_days
+        self.skarim = skarim
+
+    def GetID(self):
+        return self.id
+    
+    def GetName(self):
+        return self.name
+    
+    def GetSkarim(self):
+        return self.skarim
+
 
 class Address:
     def __init__(self, city, street, aptnum):

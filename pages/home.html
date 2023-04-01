@@ -45,16 +45,27 @@
         </div>
     </body>
     <script>
-        document.cookie = "guest"="anonymous"
-        let x = document.cookie;
-        console.log("!!!!!!!!");
-        console.log(x);
-        console.log("!!!!!!!!");
         
-        var userDifference = cookie != "guest" ? "clientSpace" : "clientLogin";
-        console.log(userDifference);
+        function deleteAllCookies() {
+            cookies = document.cookie.split(";");
+            
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            }
+        }
+        deleteAllCookies()
+        document.cookie = "guest = anonymous"
 
+        let x = document.cookies
+        alert(x)
         
+       
         
+        // var userDifference = cookie != "guest" ? "clientSpace" : "clientLogin";
+        // console.log(userDifference);
+
     </script>
-</html>
+        </html>

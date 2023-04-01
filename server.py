@@ -32,7 +32,7 @@ def file_content_type(file_name):
 
 
 def website_request(file_name): 
-    file_content = file_content_type(file_name)
+    file_content = file_content_type(file_name) 
     if 'Err' in file_content:
         return ''
     length = str(len(str(file_content[1])))
@@ -49,9 +49,14 @@ def validate_user(params):
     if type(params) == type([]):
         user[0] = 'ap'
         data = ORM.get_employee_data(params[0], params[1])
+        if data == 'ERR1':
+            return 'ERR1'
+        user[1] = Appraiser(data[0], data[1], data[-1])
     else:
         user[0] = 'cli'
         data = ORM.get_client_data(params)
+        if data == 'ERR1':
+            return 'ERR1'
         add = Address(data[7], data[8], data[9])
         if data[5] != None and data[6] != None:
             exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
@@ -82,8 +87,9 @@ def build_answer(fields, cookie):
                 if res == 'ERR1':
                     web = '/Error.html'
                 elif user[0] == 'ap':
-                    CreatePages.validated_appraiser_page(details[0], details[1])
+                    CreatePages.validated_appraiser_page(details[0], details[1], user[1].GetSkarim())
                 elif user[0] == 'cli':
+                    print(user)
                     CreatePages.validated_client_page(user[1])
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:

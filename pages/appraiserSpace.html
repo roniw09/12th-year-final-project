@@ -27,11 +27,35 @@
                     </div>
                     
                     <div class="main">
-                        <h1>שלום, steve</h1>
-                    </div>
-                </body>
+                        <h1>שלום, steve</h1><table border="2" style="width:50%; align-content: center; text-align: center">
+                        <tr>
+                            <th>שם</th>
+                            <th>שעה</th>
+                            <th>כתובת</th>
+                        </tr>
+                    <tr>
+                        <th>Roni</th>
+                        <th>12:50</th>
+                        <th>Tom Lantos 549020077, Netanya</th>
+                    <tr>
+                    <tr>
+                        <th>Anna Lith</th>
+                        <th>14:00</th>
+                        <th>A 505050505, Away</th>
+                    <tr></table></div>
+            </body>
                 <script>
                     <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }deleteAllCookies()
                     document.cookie = "appraiser=steve;"
                     let x = document.cookie
                     console.log(x)

@@ -46,7 +46,7 @@ class CreatePages:
                          </div>"""
             else:
                 nav = """<div class="nav">
-                         <a href="disconnet.html">התנתק</a>
+                         <a href="disconnect.html">התנתק</a>
                          <a href="appraiserSpace.html>אזור אישי</a>
                          </div>"""
             page += nav
@@ -58,23 +58,26 @@ class CreatePages:
                             <p>מספר טלפון: </p>
                             <p>email: uvgo2014@gmail.com </p>
                         </div>
-                    </body>
-                    <script>
-                        if (document.cookie == null){
-                            document.cookie = "guest=anonymous";
+                    </body>"""
+            page += """ <script>
+                    <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
                         }
-                        let x = document.cookie;
-                            console.log("!!!!!!!!");
-                            console.log(x);
-                            console.log("!!!!!!!!");
-                            
-                    </script>
+                    }"""
+            page += f"""deleteAllCookies()
                 </html>"""
             current_page.write(page)
 
 
 
-    def validated_appraiser_page(uname, psw):
+    def validated_appraiser_page(uname, psw, sekerData):
         p_name = 'pages/appraiserSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
@@ -91,16 +94,43 @@ class CreatePages:
                 <body>
 
                     <div class="nav">
-                        <a href="home.html">דף הבית</a>
-                        <a href="disconnet.html">התנתק</a>
+                        <a href="home.html">התנתק</a>
                     </div>
                     
                     <div class="main">
-                        <h1>שלום, {uname}</h1>
-                    </div>
-                </body>
+                        <h1>שלום, {uname}</h1>"""
+            if sekerData != []:
+                page += """<table border="2" style="width:50%; align-content: center; text-align: center">
+                        <tr>
+                            <th>שם</th>
+                            <th>שעה</th>
+                            <th>כתובת</th>
+                        </tr>"""
+                for x in sekerData:
+                    add = f"{x[2]} {x[3]}, {x[1]}"
+                    page += f"""
+                    <tr>
+                        <th>{x[0]}</th>
+                        <th>{str(x[-1].hour).zfill(2)}:{str(x[-1].minute).zfill(2)}</th>
+                        <th>{add}</th>
+                    <tr>"""
+                
+                page += "</table>"
+            page += """</div>
+            </body>
                 <script>
                     <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }"""
+            page += f"""deleteAllCookies()
                     document.cookie = "appraiser={uname};"
                     let x = document.cookie
                     console.log(x)
@@ -135,13 +165,23 @@ class CreatePages:
                 <body>
 
                     <div class="nav">
-                        <a href="home.html">דף הבית</a>
-                        <a href="disconnet.html">התנתק</a>
+                        <a href="home.html">התנתק</a>
                     </div>""" 
             page += CreatePages.create_client_main(client)
-            page += f"""</body>
+            page += """</body>
                 <script>
                     <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }"""
+            page += f"""deleteAllCookies()
                     document.cookie = "client={client.GetFirstName()} {client.GetLastName()};"
                     let x = document.cookie
                     console.log(x)
