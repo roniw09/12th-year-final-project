@@ -141,7 +141,7 @@ class CreatePages:
     def create_client_main(client):
         print(client)
         page = f"""<div class="main">
-                            <h1>HELLO {client.GetFirstName()} {client.GetLastName()}</h1>"""
+                            <h1> שלום, {client.GetFirstName()} {client.GetLastName()}</h1>"""
         if client.GetExeTime() == None:
             page += """
                     <a href="setDate.html"><button type="button">קבע תאריך</button></a>
@@ -182,7 +182,7 @@ class CreatePages:
                         }
                     }"""
             page += f"""deleteAllCookies()
-                    document.cookie = "client={client.GetFirstName()} {client.GetLastName()};"
+                    document.cookie = "client={client.GetIndex()};"
                     let x = document.cookie
                     console.log(x)
                 </script>

@@ -23,17 +23,26 @@
                 <body>
 
                     <div class="nav">
-                        <a href="home.html">דף הבית</a>
-                        <a href="disconnet.html">התנתק</a>
+                        <a href="home.html">התנתק</a>
                     </div><div class="main">
-                            <h1>HELLO רוני ויס</h1>
+                            <h1> שלום, רוני ויס</h1>
                     <a href="setDate.html"><button type="button">קבע תאריך</button></a>
             </form>
             </div>
                     </body>
                 <script>
                     <!--document.cookie = -->
-                    document.cookie = "client=רוני ויס;"
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }deleteAllCookies()
+                    document.cookie = "client=1;"
                     let x = document.cookie
                     console.log(x)
                 </script>

@@ -51,6 +51,9 @@ class Client:
         self.exeTime = exeTime
         self.appraiserId = appraiserId
     
+    def GetIndex(self):
+        return self.index
+    
     def GetFirstName(self):
         return self.fname
 

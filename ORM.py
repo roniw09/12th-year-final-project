@@ -12,6 +12,12 @@ class ORM:
         
         for row in cursor.fetchall():
             print (row)
+
+    def updateCliSekerDate(day, hm, cliID):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+
+        cursor.execute(f"""update Seker set ExeDay = {day} where ClientId = {cliID}""")
     
     def get_employee_data(uname, psw):
         today = f'{str(datetime.now().day).zfill(2)}/{str(datetime.now().month).zfill(2)}/{datetime.now().year}'

@@ -2,6 +2,7 @@ import socket, threading, os, datetime
 from ORM import *
 from usersClasses import * 
 from createPages import CreatePages
+from datetime import * 
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
@@ -66,8 +67,18 @@ def validate_user(params):
     return 'OK'
 
 
+def extract_date(data):
+    extract = data.split('?')
+    web = extract[0]
+    splitDateTime = extract[-1].split('=')
+    ymd = splitDateTime[1].split('&')[0]
+    hm = splitDateTime[-1].split('%3A')
+    hm = f'{hm[0].zfill(2)}:{hm[-1].zfill(2)}'
+    print(ymd, hm)
+    return web, ymd, hm
 
-def extract_answer(data):
+
+def extract_login_answer(data):
     web = data.split('?')[0]
     fields = data.split('?')[1].split('=')
     username = fields[1].split('&')[0]
@@ -80,7 +91,8 @@ def build_answer(fields, cookie):
     if fields[0] == 'GET':
         if '?' in fields[1]:
             if 'uname' in fields[1] or 'number' in fields[1]:
-                details, web = extract_answer(fields[1])
+                details, web = extract_login_answer(fields[1])
+                print(web)
                 if '05' in details[0]:
                     details = details[0] + '-' + details[1]
                 res = validate_user(details)
@@ -92,9 +104,12 @@ def build_answer(fields, cookie):
                     print(user)
                     CreatePages.validated_client_page(user[1])
                 fields = ['', web]
+            elif 'selected' in fields[1]:
+                web, dateSelected, timeSelected = extract_date(fields[1])
+                print(cookie)
+                ORM.updateCliSekerDate(dateSelected, timeSelected, cookie[-1].split('=')[-1])
+                fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
-            # if cookie != "anonymous" :
-            #         web = CreatePages.validated_user_home()
             ans = website_request(fields[1])
     return ans
 
