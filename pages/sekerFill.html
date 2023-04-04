@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px;}
+        .main{position: relative; top: 10px; text-align:center;font-family: 'assistant';}
+    </style>
+
+    <meta charset="utf-8">
+
+    <!--header-->
+    <head>
+        <title>יובי</title>    
+    </head>
+
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <a href="home.html">דף הבית</a>
+        </div>
+        
+        <div class="main">
+            <h1>טופס</h1>
+            <form  action="/appraiserSpace.html" id="seker">
+            </form>                   
+            <table text-align="right">
+                <tr>
+                    <td><input type="text" name="SekerID" form="seker"></td>
+                    <td>מס. סקר</td>
+                </tr>
+                <tr>
+                    <td>שם מוצר</td>
+                    <td>מחיר</td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="item1" form="seker"/></td>
+                    <td><input type="number" name="item1value"  form="seker" /></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="item2" form="seker"/></td>
+                    <td><input type="number" name="item2value"  form="seker" /></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="item3" form="seker"/></td>
+                    <td><input type="number" name="item3value"  form="seker" /></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="item4" form="seker"/></td>
+                    <td><input type="number" name="item4value"  form="seker" /></td>
+                </tr>
+                <tr>
+                    <td><input type="text" name="item5" form="seker"/></td>
+                    <td><input type="number" name="item5value"  form="seker" /></td>
+                </tr>
+            </table>  
+            <button type="submit" form="seker">הגש טופס</button>
+
+        </div>
+    </body>
+</html>

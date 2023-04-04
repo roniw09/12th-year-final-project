@@ -8,7 +8,6 @@ IP_PORT = ('0.0.0.0', 80)
 clients = []
 LINE = r'\r\n'
 current_page = ''
-user = ['guest', '']
 
 
 def file_content_type(file_name):
@@ -46,15 +45,16 @@ def website_request(file_name):
 
 
 def validate_user(params):
-    global user
+    user = []
     if type(params) == type([]):
-        user[0] = 'ap'
+        user.append('ap')
         data = ORM.get_employee_data(params[0], params[1])
         if data == 'ERR1':
             return 'ERR1'
-        user[1] = Appraiser(data[0], data[1], data[-1])
+        user.append(Appraiser(data[0], data[1], data[-1]))
+        print(user[1])
     else:
-        user[0] = 'cli'
+        user.append('cli')
         data = ORM.get_client_data(params)
         if data == 'ERR1':
             return 'ERR1'
@@ -63,8 +63,8 @@ def validate_user(params):
             exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
         else:
             exeTime = None
-        user[1] = Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10])
-    return 'OK'
+        user.append(Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10]))
+    return user
 
 
 def extract_date(data):
@@ -83,7 +83,15 @@ def extract_login_answer(data):
     fields = data.split('?')[1].split('=')
     username = fields[1].split('&')[0]
     password = fields[2] 
-    return [username, password], web  
+    return [username, password], web
+ 
+def extractSekerData(formAnswers):
+    web, dataOnly = formAnswers.split('?')[0], formAnswers.split('?')[1]
+    dataOnly = dataOnly.split('&')
+    print(web, dataOnly)
+    sekerId = dataOnly[0].split('=')[1]
+    itemsNprices = [x.split('=')[1] for x in dataOnly[1:]]
+    return web, sekerId, itemsNprices
 
 def build_answer(fields, cookie):
     ans = ''
@@ -95,11 +103,11 @@ def build_answer(fields, cookie):
                 print(web)
                 if '05' in details[0]:
                     details = details[0] + '-' + details[1]
-                res = validate_user(details)
-                if res == 'ERR1':
+                user = validate_user(details)
+                if user == 'ERR1':
                     web = '/Error.html'
                 elif user[0] == 'ap':
-                    CreatePages.validated_appraiser_page(details[0], details[1], user[1].GetSkarim())
+                    CreatePages.validated_appraiser_page(user[1])
                 elif user[0] == 'cli':
                     print(user)
                     CreatePages.validated_client_page(user[1])
@@ -108,6 +116,10 @@ def build_answer(fields, cookie):
                 web, dateSelected, timeSelected = extract_date(fields[1])
                 print(cookie)
                 ORM.updateCliSekerDate(dateSelected, timeSelected, cookie[-1].split('=')[-1])
+                fields = ['', web]
+            elif 'Seker' in fields[1]:
+                web, sekerId, sekerData = extractSekerData(fields[1])
+                ORM.updateSeker(sekerId, sekerData)
                 fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
@@ -129,9 +141,9 @@ def main():
     s = socket.socket()
 
     s.bind(IP_PORT)
-    s.listen(20)
+    s.listen(100)
     i = 0
-    while i < 20:
+    while i < 100:
         c, add = s.accept()
         print("connected")
         t = threading.Thread(target=handle_client, args=(c,add, i))

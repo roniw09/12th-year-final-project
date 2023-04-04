@@ -6,12 +6,35 @@ PATH = rf'{pathlib.Path().absolute()}'
 class ORM:
 
     def count_users():    
-        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' + PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute('select count(*) from users')
         
         for row in cursor.fetchall():
             print (row)
+
+    def updateSeker(sekerNum, sekerData):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        itemString = f"'{sekerData[0]}'"
+        sekerData = sekerData[1:]
+        itemCount = 0
+        for x in range(len(sekerData)):
+            if sekerData[x] != '':
+                if x%2 == 0:
+                    itemCount += 1
+                    itemString += f", {sekerData[x]}"
+                else:
+                    itemString += f", '{sekerData[x]}'"
+        cols = "SekerID, "
+        for x in range(int(itemCount - 1)):
+            cols += f"Item{x + 1}, Item{x + 1}Value, "
+        cols += f"Item{itemCount}, Item{itemCount}Value"
+        print(itemString, cols)
+        toExe = f"""Insert into SekerValues ({cols}) Values ({sekerNum}, {itemString})"""
+        print(toExe)
+        cursor.execute(f"""Insert into SekerValues ({cols}) Values ({sekerNum}, {itemString})""")
+        cursor.commit()
 
     def updateCliSekerDate(day, hm, cliID):
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
@@ -23,15 +46,16 @@ class ORM:
         today = f'{str(datetime.now().day).zfill(2)}/{str(datetime.now().month).zfill(2)}/{datetime.now().year}'
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
-        cursor.execute(f"""select * from employees where Username = '{uname}' and Password = '{psw}'""")
+        cursor.execute(f"""select * from agents where Username = '{uname}' and Password = '{psw}'""")
         rawData = cursor.fetchone()
         if rawData is None:
             return 'ERR1'
+        data = [x for x in rawData]
+        print(data)
         
-        cursor.execute(f"""select Name, City, Street, CellPhone, ExeHour from Seker where AgentID = {rawData[0]} and Format(ExeDay, 'dd/mm/yyyy') = '{today}'""")
+        cursor.execute(f"""select Name, City, Street, CellPhone, ExeHour from Seker where AgentID = {data[0]} and Format(ExeDay, 'dd/mm/yyyy') = '{today}'""")
         rawSekerData = cursor.fetchall()
 
-        data = [x for x in rawData]
         if rawSekerData != []:
             sekerData = []
             for t in rawSekerData:

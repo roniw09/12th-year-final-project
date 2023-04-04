@@ -77,7 +77,7 @@ class CreatePages:
 
 
 
-    def validated_appraiser_page(uname, psw, sekerData):
+    def validated_appraiser_page(user):
         p_name = 'pages/appraiserSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
@@ -98,15 +98,15 @@ class CreatePages:
                     </div>
                     
                     <div class="main">
-                        <h1>שלום, {uname}</h1>"""
-            if sekerData != []:
+                        <h1>שלום, {user.GetName()}</h1>"""
+            if user.GetSkarim() != None:
                 page += """<table border="2" style="width:50%; align-content: center; text-align: center">
                         <tr>
                             <th>שם</th>
                             <th>שעה</th>
                             <th>כתובת</th>
                         </tr>"""
-                for x in sekerData:
+                for x in user.GetSkarim():
                     add = f"{x[2]} {x[3]}, {x[1]}"
                     page += f"""
                     <tr>
@@ -115,7 +115,11 @@ class CreatePages:
                         <th>{add}</th>
                     <tr>"""
                 
-                page += "</table>"
+                page += """</table>
+                        <br><br>
+                        <input type="button" onclick="window.location.href='sekerFill.html';" value="הכנס סקר" />"""
+            else:
+                """<h2> אין לך כרגע כלום! <h2>"""
             page += """</div>
             </body>
                 <script>
@@ -131,7 +135,7 @@ class CreatePages:
                         }
                     }"""
             page += f"""deleteAllCookies()
-                    document.cookie = "appraiser={uname};"
+                    document.cookie = "appraiser={user.GetID()};"
                     let x = document.cookie
                     console.log(x)
                 </script>
