@@ -3,6 +3,7 @@ import datetime
 from ORM import *
 from usersClasses import * 
 from createPages import CreatePages
+from chat import *
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
@@ -139,6 +140,10 @@ def build_answer(fields, cookie):
                 ORM.updateSeker(sekerId, sekerData)
                 fields = ['', web]
             elif 'msg' in fields[1]:
+                reciever, msg = fields[1].split('?')[1].split('&')
+                reciever = reciever.split('=')
+                msg= msg.split('=')[1]
+                res = update_send_msg(reciever, msg, cookie)
                 web = fields[1].split('?')[0]
                 print(web)
                 fields = ['', web]

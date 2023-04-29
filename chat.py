@@ -1,6 +1,7 @@
 from usersClasses import Appraiser, Client
 from ORM import * 
 
+
 def build_chat(user):
     page = """<!DOCTYPE html>
     <html>
@@ -70,7 +71,7 @@ def build_chat(user):
         </select>
         <input type="text" name="msgcon" id="chat-input" placeholder="Type your message...">
         <button type="submit" onclick="sendMessage()">Send</button>
-        </form onsubmit=" return false;">
+        </form>
         
         <script>
         function sendMessage() {
@@ -86,3 +87,10 @@ def build_chat(user):
     </html>
     """
     return page
+
+def update_send_msg(who_to, msg, cookie):
+    print (who_to, msg, cookie)
+    ORM.save_msg(who_to[1], cookie[1].split('=')[1], msg)
+    if who_to[0] == 'cli':
+        pass
+    pass

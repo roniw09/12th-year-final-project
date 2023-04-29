@@ -123,8 +123,21 @@ class ORM:
     def get_client_app(user):
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT AgentId from Seker where ClientId = '{user.GetIndex()}'""")
+        cursor.execute(f"""SELECT AgentId from Seker where ClientId = '{user.GetID()}'""")
 
         data = cursor.fetchall()
         print(data)
         pass
+
+    def save_msg(client, agent, msg):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""Insert into Msgs Values ({client}, {agent}, {msg})""")
+        conn.commit()
+
+    def get_user_msgs(id):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT * from Messages where ClientId = '{user.GetID()}'""")
+
+

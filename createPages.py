@@ -187,7 +187,7 @@ class CreatePages:
                         }
                     }"""
             page += f"""deleteAllCookies()
-                    document.cookie = "client={client.GetIndex()};"
+                    document.cookie = "client={client.GetID()};"
                     let x = document.cookie
                     console.log(x)
                 </script>

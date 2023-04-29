@@ -41,8 +41,8 @@ class Address:
        
 class Client:
 
-    def __init__(self, index, fname, lname, sekerId, phone, address, exeTime, appraiserId):
-        self.index = index
+    def __init__(self, id, fname, lname, sekerId, phone, address, exeTime, appraiserId):
+        self.id = id
         self.fname = fname
         self.lname = lname
         self.sekerId = sekerId
@@ -51,8 +51,8 @@ class Client:
         self.exeTime = exeTime
         self.appraiserId = appraiserId
     
-    def GetIndex(self):
-        return self.index
+    def GetID(self):
+        return self.id
     
     def GetFirstName(self):
         return self.fname
