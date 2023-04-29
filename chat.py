@@ -70,7 +70,7 @@ def build_chat(user):
         </select>
         <input type="text" name="msgcon" id="chat-input" placeholder="Type your message...">
         <button type="submit" onclick="sendMessage()">Send</button>
-        </form>
+        </form onsubmit=" return false;">
         
         <script>
         function sendMessage() {
@@ -80,8 +80,6 @@ def build_chat(user):
             messageDiv.className = 'message';
             messageDiv.innerHTML = `<span class="sender">You:</span> ${message}`;
             chatWindow.appendChild(messageDiv);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-            document.getElementById('chat-input').value = '';
         }
         </script>
     </body>
