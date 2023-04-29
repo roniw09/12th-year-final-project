@@ -41,6 +41,7 @@ class ORM:
         cursor = conn.cursor()
 
         cursor.execute(f"""update Seker set ExeDay = {day} where ClientId = {cliID}""")
+        conn.commit()
     
     def get_employee_data(uname, psw):
         today = f'{str(datetime.now().day).zfill(2)}/{str(datetime.now().month).zfill(2)}/{datetime.now().year}'
@@ -63,6 +64,34 @@ class ORM:
             data.append(sekerData)
         return data
     
+    def get_app_by_id(id):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""select * from Agents where AgentId = {id}""")
+
+        data = cursor.fetchall()
+        if data != []:
+            res = []
+            for x in data[0]:
+                res.append(x)
+            print(res, len(res))
+            return res
+        return 'ERR1'
+    
+    def get_cli_by_id(id):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""select * from Clients where ClientId = {id}""")
+
+        data = cursor.fetchall()
+        if data != []:
+            res = []
+            for x in data[0]:
+                res.append(x)
+            print(res, len(res))
+            return res
+        return 'ERR1'
+    
     def get_client_data(phone):
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
@@ -76,3 +105,26 @@ class ORM:
             print(res, len(res))
             return res
         return 'ERR1'
+    
+    def get_app_clients(user):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT ClientId, Name from Seker where AgentId = {user.GetID()}""")
+
+        data = cursor.fetchall()
+        options = []
+        names = []
+        for x in data:
+            options.append(x[0])
+            names.append(x[1])
+        print(options, names)
+        return options, names
+
+    def get_client_app(user):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT AgentId from Seker where ClientId = '{user.GetIndex()}'""")
+
+        data = cursor.fetchall()
+        print(data)
+        pass

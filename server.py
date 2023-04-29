@@ -1,8 +1,8 @@
-import socket, threading, os, datetime
+import socket, threading, os
+import datetime
 from ORM import *
 from usersClasses import * 
 from createPages import CreatePages
-from datetime import * 
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
@@ -56,11 +56,12 @@ def validate_user(params):
     else:
         user.append('cli')
         data = ORM.get_client_data(params)
+        print(data)
         if data == 'ERR1':
             return 'ERR1'
         add = Address(data[7], data[8], data[9])
         if data[5] != None and data[6] != None:
-            exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+            exeTime = datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
         else:
             exeTime = None
         user.append(Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10]))
@@ -77,6 +78,23 @@ def extract_date(data):
     print(ymd, hm)
     return web, ymd, hm
 
+def get_user_from_cookie(cookie):
+    user = ''
+    if cookie == None:
+        return 'Err'
+    c_type, c_id = cookie[1].split('=')
+    if c_type == 'appraiser':
+        data = ORM.get_app_by_id(c_id)
+        user = Appraiser(data[0], data[1], data[-1])
+    else:
+        data = ORM.get_cli_by_id(c_id)
+        add = Address(data[7], data[8], data[9])
+        if data[5] != None and data[6] != None:
+            exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+        else:
+            exeTime = None
+        user = Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10])
+    return user
 
 def extract_login_answer(data):
     web = data.split('?')[0]
@@ -94,6 +112,7 @@ def extractSekerData(formAnswers):
     return web, sekerId, itemsNprices
 
 def build_answer(fields, cookie):
+    print(cookie)
     ans = ''
     pic = ''
     if fields[0] == 'GET':
@@ -109,19 +128,25 @@ def build_answer(fields, cookie):
                 elif user[0] == 'ap':
                     CreatePages.validated_appraiser_page(user[1])
                 elif user[0] == 'cli':
-                    print(user)
                     CreatePages.validated_client_page(user[1])
                 fields = ['', web]
             elif 'selected' in fields[1]:
                 web, dateSelected, timeSelected = extract_date(fields[1])
-                print(cookie)
                 ORM.updateCliSekerDate(dateSelected, timeSelected, cookie[-1].split('=')[-1])
                 fields = ['', web]
             elif 'Seker' in fields[1]:
                 web, sekerId, sekerData = extractSekerData(fields[1])
                 ORM.updateSeker(sekerId, sekerData)
                 fields = ['', web]
+            elif 'msg' in fields[1]:
+                web = fields[1].split('?')[0]
+                print(web)
+                fields = ['', web]
         if '/' in fields[1] and '?' not in fields[1]:
+            if 'chat' in fields[1]:
+                user = get_user_from_cookie(cookie)
+                print(user, type(user))
+                web = CreatePages.go_chat(user)
             ans = website_request(fields[1])
     return ans
 

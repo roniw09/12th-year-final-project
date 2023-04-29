@@ -1,4 +1,4 @@
-import webbrowser
+import webbrowser, chat
 from usersClasses import *
 
 HEADER = "<!DOCTYPE html>"
@@ -99,7 +99,10 @@ class CreatePages:
                     
                     <div class="main">
                         <h1>שלום, {user.GetName()}</h1>"""
-            if user.GetSkarim() != None:
+            if user.GetSkarim() == None:
+                page += """<h2> אין לך כרגע כלום! <h2>
+                    <a href="chat.html">chat</a>"""
+            else:
                 page += """<table border="2" style="width:50%; align-content: center; text-align: center">
                         <tr>
                             <th>שם</th>
@@ -118,8 +121,6 @@ class CreatePages:
                 page += """</table>
                         <br><br>
                         <input type="button" onclick="window.location.href='sekerFill.html';" value="הכנס סקר" />"""
-            else:
-                """<h2> אין לך כרגע כלום! <h2>"""
             page += """</div>
             </body>
                 <script>
@@ -151,7 +152,7 @@ class CreatePages:
                     <a href="setDate.html"><button type="button">קבע תאריך</button></a>
             </form>
             </div>
-                    """
+                    <div><a href="chat.html">chat</a></div>"""
         return page
     
     def validated_client_page(client):
@@ -192,5 +193,13 @@ class CreatePages:
                 </script>
             </html>"""
             current_page.write(page)
+
+    def go_chat(user):
+        p_name = 'pages/chat.html'
+
+        with open(p_name, 'w', encoding="utf-8") as current_page:
+            page = chat.build_chat(user)
+            current_page.write(page)
+        return 'chat.html'
     
     
