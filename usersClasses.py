@@ -71,5 +71,5 @@ class Client:
 
     def __str__(self):
         return f"""name: {self.fname} {self.lname}\n
-                    index: {self.index}
+                    index: {self.id}
                     Exetime: {self.exeTime}"""

@@ -153,6 +153,15 @@ class CreatePages:
             </form>
             </div>
                     <div><a href="chat.html">chat</a></div>"""
+        else:
+            page += f"""
+            <p>תאריך נוכחי</p>
+            <p>{client.GetExeTime()}</p>
+            <a href="setDate.html"><button type="button">קבע תאריך</button></a>
+            </form>
+            </div>
+                    <div><a href="chat.html">chat</a></div>
+            """
         return page
     
     def validated_client_page(client):
@@ -173,7 +182,8 @@ class CreatePages:
                         <a href="home.html">התנתק</a>
                     </div>""" 
             page += CreatePages.create_client_main(client)
-            page += """</body>
+            page += """ <a href="chat.html">chat</a>
+            </body>
                 <script>
                     <!--document.cookie = -->
                     function deleteAllCookies() {
