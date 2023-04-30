@@ -1,5 +1,6 @@
 import pyodbc, pathlib
 from datetime import *
+from usersClasses import *
 
 PATH = rf'{pathlib.Path().absolute()}'
 
@@ -129,15 +130,34 @@ class ORM:
         print(data)
         pass
 
-    def save_msg(client, agent, msg):
+    def save_msg(client, agent, msg, who_sent):
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
-        cursor.execute(f"""Insert into Msgs Values ({client}, {agent}, {msg})""")
+        cursor.execute(f"""Insert into Msgs (ClientId, AgentId, Msg, WhoSent) Values ({client}, {agent}, '{msg}', '{who_sent}')""")
         conn.commit()
 
-    def get_user_msgs(id):
+    def get_user_msgs(id, u_type):
+        t = ''
+        if u_type == Appraiser:
+            u_type = 'Agent'
+        else:
+            u_type = 'Client'
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT * from Messages where ClientId = '{user.GetID()}'""")
+        cursor.execute(f"""SELECT * from Msgs where {u_type}Id = {id}""")
+
+        data = cursor.fetchall()
+        print('!!!!', data)
+        msgs = []
+        for x in data:
+            msgs.append(x)
+
+        if u_type == 'Agent':
+            cursor.execute(f"Select FirstName, LastName from Clients where ClientId = {msgs[0][1]}")
+            name = cursor.fetchall()[0]
+            name = name[0] + ' ' + name[1]
+        return name, msgs
+         
+
 
 

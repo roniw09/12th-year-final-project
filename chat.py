@@ -3,6 +3,11 @@ from ORM import *
 
 
 def build_chat(user):
+    u_type = type(user)
+    if u_type == 'Client':
+        u_type = 'client'
+    else: u_type = 'agent'
+    c_name, prev = insert_msg(user)
     page = """<!DOCTYPE html>
     <html>
     <head>
@@ -44,13 +49,31 @@ def build_chat(user):
             font-weight: bold;
             color: blue;
         }
+        /* Sender styles */
+        .reciever {
+            font-weight: bold;
+            color: green;
+        }
         </style>
     </head>
     <body>
         <div class="nav">
             <a href="home.html">התנתק</a>
         </div>
-        <div id="chat-window"></div>
+        <div id="chat-window">
+        <div class="message">"""
+    
+    for x in prev:
+        if u_type == x[-1]:
+            u_name = 'You:'
+            page += f'<span class="sender">{u_name} </span>{x[3]}<br>'
+        else:
+            u_name = c_name + ':'
+            page += f'<span class="reciever">{u_name} </span>{x[3]}<br>'
+
+    page += """
+        </div>
+        </div>
         <form>
         """
     rec_type = ''
@@ -90,7 +113,14 @@ def build_chat(user):
 
 def update_send_msg(who_to, msg, cookie):
     print (who_to, msg, cookie)
-    ORM.save_msg(who_to[1], cookie[1].split('=')[1], msg)
-    if who_to[0] == 'cli':
-        pass
-    pass
+    who_sent = ''
+    if cookie[1].split('=')[0] == 'appraiser':
+        who_sent = 'agent'
+    else:
+        who_sent = 'client'
+    ORM.save_msg(who_to[1], cookie[1].split('=')[1], msg, who_sent)
+
+def insert_msg(user):
+    id = user.GetID()
+    n, prev = ORM.get_user_msgs(id, type(user), )
+    return n, prev
