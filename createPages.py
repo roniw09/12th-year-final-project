@@ -151,17 +151,16 @@ class CreatePages:
             page += """
                     <a href="setDate.html"><button type="button">קבע תאריך</button></a>
             </form>
-            </div>
-                    <div><a href="chat.html">chat</a></div>"""
+            <a href="chat.html">chat</a>
+            </div>"""
         else:
             page += f"""
             <p>תאריך נוכחי</p>
             <p>{client.GetExeTime()}</p>
-            <a href="setDate.html"><button type="button">קבע תאריך</button></a>
+            <a href="setDate.html"><button type="button">שנה תאריך</button></a>
             </form>
-            </div>
-                    <div><a href="chat.html">chat</a></div>
-            """
+            <a href="chat.html">chat</a>
+            </div>"""
         return page
     
     def validated_client_page(client):

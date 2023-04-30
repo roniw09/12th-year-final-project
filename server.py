@@ -80,6 +80,7 @@ def extract_date(data):
     return web, ymd, hm
 
 def get_user_from_cookie(cookie):
+    print(cookie)
     user = ''
     if cookie == None:
         return 'Err'

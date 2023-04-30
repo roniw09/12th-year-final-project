@@ -1,5 +1,6 @@
 import pyodbc, pathlib
 from datetime import *
+import hashlib
 
 PATH = rf'{pathlib.Path().absolute()}'
 
@@ -16,4 +17,9 @@ def get_client_data(phone):
         return res
     return 'ERR1'
 
-print(get_client_data('054-9918135'))
+# print(get_client_data('054-9918135'))
+
+def convert_to_sha2(psw):
+    return hashlib.sha256(psw.encode()).hexdigest()
+
+print(convert_to_sha2('1234'))

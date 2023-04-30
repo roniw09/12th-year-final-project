@@ -1,4 +1,4 @@
-import pyodbc, pathlib
+import pyodbc, pathlib, hashlib
 from datetime import *
 from usersClasses import *
 
@@ -45,6 +45,7 @@ class ORM:
         conn.commit()
     
     def get_employee_data(uname, psw):
+        psw = hashlib.sha256(psw.encode()).hexdigest()
         today = f'{str(datetime.now().day).zfill(2)}/{str(datetime.now().month).zfill(2)}/{datetime.now().year}'
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
