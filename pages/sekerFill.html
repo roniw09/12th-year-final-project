@@ -1,62 +1,169 @@
 <!DOCTYPE html>
 <html>
-    <!--how will the page look-->
-    <style>
-        .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
-        .main{position: relative; top: 10px;text-align: center;font-size: 25px;}
-        .main{position: relative; top: 10px; text-align:center;font-family: 'assistant';}
-    </style>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			body {font-family: Arial;}
 
-    <meta charset="utf-8">
+			/* Style the tab */
+			.tab {
+				overflow: hidden;
+				border: 1px solid #ccc;
+				background-color: #f1f1f1;
+			}
 
-    <!--header-->
-    <head>
-        <title>יובי</title>    
-    </head>
+			/* Style the buttons inside the tab */
+			.tab button {
+				background-color: inherit;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				transition: 0.3s;
+				font-size: 17px;
+			}
 
-    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
-    <body>
+			/* Change background color of buttons on hover */
+			.tab button:hover {
+				background-color: #ddd;
+			}
 
-        <div class="nav">
-            <a href="home.html">דף הבית</a>
-        </div>
-        
-        <div class="main">
-            <h1>טופס</h1>
-            <form  action="/appraiserSpace.html" id="seker">
-            </form>                   
-            <table text-align="right">
-                <tr>
-                    <td><input type="text" name="SekerID" form="seker"></td>
-                    <td>מס. סקר</td>
-                </tr>
-                <tr>
-                    <td>שם מוצר</td>
-                    <td>מחיר</td>
-                </tr>
-                <tr>
-                    <td><input type="text" name="item1" form="seker"/></td>
-                    <td><input type="number" name="item1value"  form="seker" /></td>
-                </tr>
-                <tr>
-                    <td><input type="text" name="item2" form="seker"/></td>
-                    <td><input type="number" name="item2value"  form="seker" /></td>
-                </tr>
-                <tr>
-                    <td><input type="text" name="item3" form="seker"/></td>
-                    <td><input type="number" name="item3value"  form="seker" /></td>
-                </tr>
-                <tr>
-                    <td><input type="text" name="item4" form="seker"/></td>
-                    <td><input type="number" name="item4value"  form="seker" /></td>
-                </tr>
-                <tr>
-                    <td><input type="text" name="item5" form="seker"/></td>
-                    <td><input type="number" name="item5value"  form="seker" /></td>
-                </tr>
-            </table>  
-            <button type="submit" form="seker">הגש טופס</button>
+			/* Create an active/current tablink class */
+			.tab button.active {
+				background-color: #ccc;
+			}
 
-        </div>
-    </body>
-</html>
+			/* Style the tab content */
+			.tabcontent {
+				display: none;
+				padding: 6px 12px;
+				border: 1px solid #ccc;
+				border-top: none;
+			}
+		</style>
+		<meta charset="utf-8">
+	</head>
+	<body>
+
+		<form  action="/appraiserSpace.html" id="seker"></form>
+
+		<div class="tab">
+			<button class="tablinks" onclick="openCity(event, 'פרק 1')" id="defaultOpen">פרק</button>
+			<button class="tablinks" onclick="openCity(event, 'פרק 2')">פרק 2</button>
+			<button class="tablinks" onclick="openCity(event, 'פרק 3')">פרק 3</button>
+		</div>
+
+		<div id="פרק 1" class="tabcontent">
+			<table text-align="right">
+				<tr>
+					<td>שם מוצר</td>
+					<td>מחיר</td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i1" form="seker"/></td>
+					<td><input type="number" name="c1i1value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i2" form="seker"/></td>
+					<td><input type="number" name="c1i2value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i3" form="seker"/></td>
+					<td><input type="number" name="c1i3value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i4" form="seker"/></td>
+					<td><input type="number" name="c1i4value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i5" form="seker"/></td>
+					<td><input type="number" name="c1i5value"  form="seker" /></td>
+				</tr>
+			</table>  
+		</div>
+
+		<div id="פרק 2" class="tabcontent">
+			<table text-align="right">
+				<tr>
+					<td>שם מוצר</td>
+					<td>מחיר</td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i1" form="seker"/></td>
+					<td><input type="number" name="c4i1value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i2" form="seker"/></td>
+					<td><input type="number" name="c4i2value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i3" form="seker"/></td>
+					<td><input type="number" name="c4i3value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i4" form="seker"/></td>
+					<td><input type="number" name="c4i4value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i5" form="seker"/></td>
+					<td><input type="number" name="c4i5value"  form="seker" /></td>
+				</tr>
+			</table>  
+		</div>
+
+		<div id="פרק 3" class="tabcontent">
+			<table text-align="right">
+				<tr>
+					<td>שם מוצר</td>
+					<td>מחיר</td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i1" form="seker"/></td>
+					<td><input type="number" name="c3i1value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i2" form="seker"/></td>
+					<td><input type="number" name="c3i2value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i3" form="seker"/></td>
+					<td><input type="number" name="c3i3value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i4" form="seker"/></td>
+					<td><input type="number" name="c3i4value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i5" form="seker"/></td>
+					<td><input type="number" name="c3i5value"  form="seker" /></td>
+				</tr>
+			</table>  
+			<button type="button" class="add_field">Add field</button>
+			<button type="submit" form="seker">הגש טופס</button>
+		</div>
+
+		<script>
+			function openCity(evt, cityName) {
+			var i, tabcontent, tablinks;
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+				tabcontent[i].style.display = "none";
+			}
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+			document.getElementById(cityName).style.display = "block";
+				evt.currentTarget.className += " active";
+			}
+
+			// Get the element with id="defaultOpen" and click on it
+			document.getElementById("defaultOpen").click();
+
+			$(document).on('click', '.add_field', function() {
+			$('<input type="text" class="input" name="field[]" value="">').insertAfter('.input:last');})
+		</script>
+	
+	</body>
+</html> 

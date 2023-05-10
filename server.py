@@ -26,13 +26,15 @@ def file_content_type(file_name):
         path = f'assests{file_name}'
     if path == '':
         return 'Err'
+    print(path)
     c_file = open(path, 'r', encoding="utf-8")
     content += '\n'.join(x for x in c_file.readlines())
     c_file.close()
+    print(content)
     return [f_type, content] 
 
 
-def website_request(file_name): 
+def website_request(file_name,):
     file_content = file_content_type(file_name) 
     if 'Err' in file_content:
         return ''
@@ -116,7 +118,7 @@ def extractSekerData(formAnswers):
 def build_answer(fields, cookie):
     print(cookie)
     ans = ''
-    pic = ''
+    web = None
     if fields[0] == 'GET':
         if '?' in fields[1]:
             if 'uname' in fields[1] or 'number' in fields[1]:
@@ -141,18 +143,24 @@ def build_answer(fields, cookie):
                 ORM.updateSeker(sekerId, sekerData)
                 fields = ['', web]
             elif 'msg' in fields[1]:
-                reciever, msg = fields[1].split('?')[1].split('&')
-                reciever = reciever.split('=')
-                msg= msg.split('=')[1]
+                print(fields[1])
+                reciever, msg = fields[1].split('?')[1].split('=')
+                reciever = [reciever.split('qq'), reciever.split('qq')[1]]
+                print(reciever, msg)
                 res = update_send_msg(reciever, msg, cookie)
                 web = fields[1].split('?')[0]
                 print(web)
                 fields = ['', web]
-        if '/' in fields[1] and '?' not in fields[1]:
-            if 'chat' in fields[1]:
+                print(web)
+            elif 'chat' in fields[1]:
+                send_to = fields[1].split("?")[1].split("=")[1]
+                print(send_to)
                 user = get_user_from_cookie(cookie)
                 print(user, type(user))
-                web = CreatePages.go_chat(user)
+                web = CreatePages.go_chat(user, send_to)
+                fields = ['', web]
+                print(web)
+        if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
     return ans
 

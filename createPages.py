@@ -108,6 +108,8 @@ class CreatePages:
                             <th>שם</th>
                             <th>שעה</th>
                             <th>כתובת</th>
+                            <th>מלא סקר</th>
+                            <th>צ'אט</th>
                         </tr>"""
                 for x in user.GetSkarim():
                     add = f"{x[2]} {x[3]}, {x[1]}"
@@ -116,6 +118,8 @@ class CreatePages:
                         <th>{x[0]}</th>
                         <th>{str(x[-1].hour).zfill(2)}:{str(x[-1].minute).zfill(2)}</th>
                         <th>{add}</th>
+                        <th> <input type="button" onclick="window.location.href='sekerFill.html?id={user.GetID()}';" value="הכנס סקר" /></th>
+                        <th><a href="chat.html?id={user.GetID()}">chat</a></th>
                     <tr>"""
                 
                 page += """</table>
@@ -203,12 +207,12 @@ class CreatePages:
             </html>"""
             current_page.write(page)
 
-    def go_chat(user):
+    def go_chat(user, send_to):
         p_name = 'pages/chat.html'
 
         with open(p_name, 'w', encoding="utf-8") as current_page:
-            page = chat.build_chat(user)
+            page = chat.build_chat(user, send_to)
             current_page.write(page)
-        return 'chat.html'
+        return '/chat.html'
     
     

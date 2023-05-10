@@ -2,7 +2,7 @@ from usersClasses import Appraiser, Client
 from ORM import * 
 
 
-def build_chat(user):
+def build_chat(user, send_to):
     u_type = type(user)
     if u_type == 'Client':
         u_type = 'client'
@@ -55,6 +55,7 @@ def build_chat(user):
             color: green;
         }
         </style>
+		<meta charset="utf-8">
     </head>
     <body>
         <div class="nav">
@@ -71,28 +72,23 @@ def build_chat(user):
             u_name = c_name + ':'
             page += f'<span class="reciever">{u_name} </span>{x[3]}<br>'
 
-    page += """
+    page += f"""
         </div>
         </div>
         <form>
         """
     rec_type = ''
-    options = []
     print(type(user))
     if type(user) == Appraiser:
         rec_type = 'cli'
-        options, names = ORM.get_app_clients(user)
     else:
         rec_type = 'agent'
-        options, names = ORM.get_client_app(user)
+    print(type(user), rec_type)
     page += f"""<select name="{rec_type}">"""
-
-    for x in range(len(options)):
-        page += f"""<option value="{options[x]}">{names[x]}</option>"""
         
+    page += f"""
+                <input type="text" name="{rec_type}qq{send_to}qqmsgcon" id="chat-input" placeholder="Type your message...">"""
     page += """
-        </select>
-        <input type="text" name="msgcon" id="chat-input" placeholder="Type your message...">
         <button type="submit" onclick="sendMessage()">Send</button>
         </form>
         
