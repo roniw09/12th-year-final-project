@@ -65,6 +65,7 @@ def build_chat(user, send_to):
         <div class="message">"""
     
     for x in prev:
+        print(prev)
         if u_type == x[-1]:
             u_name = 'You:'
             page += f'<span class="sender">{u_name} </span>{x[3]}<br>'

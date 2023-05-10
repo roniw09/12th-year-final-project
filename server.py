@@ -145,7 +145,7 @@ def build_answer(fields, cookie):
             elif 'msg' in fields[1]:
                 print(fields[1])
                 reciever, msg = fields[1].split('?')[1].split('=')
-                reciever = [reciever.split('qq'), reciever.split('qq')[1]]
+                reciever = [reciever.split('qq')[0], reciever.split('qq')[1]]
                 print(reciever, msg)
                 res = update_send_msg(reciever, msg, cookie)
                 web = fields[1].split('?')[0]
