@@ -68,16 +68,16 @@ def validate_user(params):
         print(user[1])
     else:
         user.append('cli')
-        data = ORM.get_client_data(params)
+        data, exe_date= ORM.get_client_data(params)
         print(data)
         if data == 'ERR1':
             return 'ERR1'
-        add = Address(data[7], data[8], data[9])
-        if data[5] != None and data[6] != None:
-            exeTime = datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+        add = Address(data[5], data[6], data[7])
+        if date != None:
+            exeTime = datetime(exe_date[0].year, exe_date[0].month, exe_date[0].day, exe_date[1].hour, exe_date[1].minute)
         else:
             exeTime = None
-        user.append(Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10]))
+        user.append(Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[-1]))
     return user
 
 

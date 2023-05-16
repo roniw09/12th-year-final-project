@@ -98,7 +98,11 @@ class ORM:
             for x in data[0]:
                 res.append(x)
             print(res, len(res))
-            return res
+            cursor.execute(f"""select ExeDay, ExeHour from Seker where ClientId = {res[0]}""")
+            print('exe')
+            d2 = cursor.fetchone()
+            exe_date = [x for x in d2]
+            return res, exe_date
         return 'ERR1'
     
     def get_app_clients(user):
