@@ -4,6 +4,7 @@ from ORM import *
 from usersClasses import * 
 from createPages import CreatePages
 from chat import *
+from seker import *
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
@@ -12,6 +13,9 @@ current_page = ''
 
 
 def file_content_type(file_name):
+    """
+        determine the content type of a file based on its extension and retrieve its content.
+    """
     path = ''
     content = ''
     if file_name == '/':
@@ -35,6 +39,9 @@ def file_content_type(file_name):
 
 
 def website_request(file_name,):
+    """
+        write the http website request, including retrieving the file content and constructing the HTTP response.
+    """
     file_content = file_content_type(file_name) 
     if 'Err' in file_content:
         return ''
@@ -48,6 +55,9 @@ def website_request(file_name,):
 
 
 def validate_user(params):
+    """
+        validate user credentials and return an appropriate user object based on the user type (appraiser or cli).
+    """
     user = []
     if type(params) == type([]):
         user.append('ap')
@@ -72,6 +82,9 @@ def validate_user(params):
 
 
 def extract_date(data):
+    """
+        extract the web, date, and time information from the request.
+    """
     extract = data.split('?')
     web = extract[0]
     splitDateTime = extract[-1].split('=')
@@ -82,6 +95,9 @@ def extract_date(data):
     return web, ymd, hm
 
 def get_user_from_cookie(cookie):
+    """
+        extract user information from a cookie.
+    """
     print(cookie)
     user = ''
     if cookie == None:
@@ -101,6 +117,9 @@ def get_user_from_cookie(cookie):
     return user
 
 def extract_login_answer(data):
+    """
+        extract username and password from the login request.
+    """
     web = data.split('?')[0]
     fields = data.split('?')[1].split('=')
     username = fields[1].split('&')[0]
@@ -108,22 +127,36 @@ def extract_login_answer(data):
     return [username, password], web
  
 def extractSekerData(formAnswers):
+    """
+        extract Seker ID and item prices from form submission.
+    """
     web, dataOnly = formAnswers.split('?')[0], formAnswers.split('?')[1]
     dataOnly = dataOnly.split('&')
-    print(web, dataOnly)
     sekerId = dataOnly[0].split('=')[1]
-    itemsNprices = [x.split('=')[1] for x in dataOnly[1:]]
+    c1ItemPrices = []
+    c2ItemPrices = []
+    c3ItemPrices = []
+    for x in dataOnly[1:]:
+        if 'c1' in x:
+            c1ItemPrices.append(x.split('=')[1])
+        elif 'c2' in x:
+            c2ItemPrices.append(x.split('=')[1])
+        elif 'c3' in x:
+            c3ItemPrices.append(x.split('=')[1])
+    itemsNprices = [c1ItemPrices, c2ItemPrices, c3ItemPrices]
     return web, sekerId, itemsNprices
 
+
 def build_answer(fields, cookie):
-    print(cookie)
+    """
+        build the appropriate HTTP response.
+    """
     ans = ''
     web = None
     if fields[0] == 'GET':
         if '?' in fields[1]:
             if 'uname' in fields[1] or 'number' in fields[1]:
                 details, web = extract_login_answer(fields[1])
-                print(web)
                 if '05' in details[0]:
                     details = details[0] + '-' + details[1]
                 user = validate_user(details)
@@ -138,45 +171,49 @@ def build_answer(fields, cookie):
                 web, dateSelected, timeSelected = extract_date(fields[1])
                 ORM.updateCliSekerDate(dateSelected, timeSelected, cookie[-1].split('=')[-1])
                 fields = ['', web]
-            elif 'Seker' in fields[1]:
+            elif 'sekerFill' in fields[1]:
+                cli_id = fields[1][1:].split('?')[1].split('=')[1]
+                create_seker(cli_id)
+                fields = ['', '/sekerFill.html']
+            elif 'cli_id' in fields[1]:
                 web, sekerId, sekerData = extractSekerData(fields[1])
                 ORM.updateSeker(sekerId, sekerData)
                 fields = ['', web]
             elif 'msg' in fields[1]:
-                print(fields[1])
                 reciever, msg = fields[1].split('?')[1].split('=')
                 reciever = [reciever.split('qq')[0], reciever.split('qq')[1]]
-                print(reciever, msg)
                 res = update_send_msg(reciever, msg, cookie)
                 web = fields[1].split('?')[0]
-                print(web)
                 fields = ['', web]
-                print(web)
             elif 'chat' in fields[1]:
                 send_to = fields[1].split("?")[1].split("=")[1]
-                print(send_to)
                 user = get_user_from_cookie(cookie)
-                print(user, type(user))
                 web = CreatePages.go_chat(user, send_to)
                 fields = ['', web]
-                print(web)
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
     return ans
 
 
 def handle_client(c_sock, addres, id):
+    """
+        handle a client connection, receive and process the client's request, and send back the response.
+    """
     i = 0
     data = c_sock.recv(1024).decode()
     print("CURRENT REQUEST:\n",data)
     cookie = data.split('\r\n')[-3].split()
     fields = data.split('\r\n')[0].split()
     response = build_answer(fields, cookie) 
+    print(response)
     if response is not None:
         c_sock.send(response.encode())
     c_sock.close()
 
 def main():
+    """
+        main loop
+    """
     s = socket.socket()
 
     s.bind(IP_PORT)

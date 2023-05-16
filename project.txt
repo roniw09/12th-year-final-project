@@ -1,0 +1,1526 @@
+CHAT.PY:
+
+
+CREATEPAGES.PY:
+import webbrowser, chat
+from usersClasses import *
+
+HEADER = "<!DOCTYPE html>"
+
+STYLE = """ <!--how will the page look-->
+        <style>
+        body {
+            background-color: #b2b2b2;
+            height: 500px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+        .nav a {color:black;text-align: right; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px; font-family: assistant; }
+        .main h1{position: relative; top: 10px; text-align:center;}
+        .contact{position: relative;text-align: right;font-size: 25px; font-family: assistant;}
+    </style>"""
+
+
+class CreatePages:
+
+    def clear_page(page):
+        """
+        clear last page
+        """
+        with open(page, 'w') as current_page:
+            current_page.truncate(0)
+
+    def validated_user_home(type):
+        p_name = "pages/validatedUserHome.html"
+        with open(p_name, "w", encoding="utf-8") as current_page:
+            nav = ''
+            page =  """<!DOCTYPE html>
+                    <html>""" + STYLE + """<head>
+                    <title>יובי</title>    
+                    </head>
+                    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+                    <body>"""
+            if type =="client":
+               nav = """<div class="nav">
+                         <a href="disconnet.html">התנתק</a>
+                         <a href="clientSpace.html>אזור אישי</a>
+                         </div>"""
+            else:
+                nav = """<div class="nav">
+                         <a href="disconnect.html">התנתק</a>
+                         <a href="appraiserSpace.html>אזור אישי</a>
+                         </div>"""
+            page += nav
+            page += """<div class="main">
+                       </div>
+
+                        <div class="contact">
+                            <h2>פרטי ההתקשרות איתנו</h2>
+                            <p>מספר טלפון: </p>
+                            <p>email: uvgo2014@gmail.com </p>
+                        </div>
+                    </body>"""
+            page += """ <script>
+                    <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }"""
+            page += f"""deleteAllCookies()
+                </html>"""
+            current_page.write(page)
+
+
+
+    def validated_appraiser_page(user):
+        p_name = 'pages/appraiserSpace.html'
+        with open (p_name, 'w', encoding="utf-8") as current_page:
+            page = """<!DOCTYPE html>
+            <html> """
+            
+            page += STYLE 
+            page += f"""
+                <meta charset="utf-8">
+                <!--header-->
+                <head>
+                    <title>יובי</title>    
+                </head>
+                <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+                <body>
+
+                    <div class="nav">
+                        <a href="home.html">התנתק</a>
+                    </div>
+                    
+                    <div class="main">
+                        <h1>שלום, {user.GetName()}</h1>"""
+            if user.GetSkarim() == None:
+                page += """<h2> אין לך כרגע כלום! <h2>
+                    <a href="chat.html">chat</a>"""
+            else:
+                page += """<table border="2" style="width:50%; align-content: center; text-align: center">
+                        <tr>
+                            <th>שם</th>
+                            <th>שעה</th>
+                            <th>כתובת</th>
+                            <th>מלא סקר</th>
+                            <th>צ'אט</th>
+                        </tr>"""
+                for x in user.GetSkarim():
+                    add = f"{x[2]} {x[3]}, {x[1]}"
+                    page += f"""
+                    <tr>
+                        <th>{x[0]}</th>
+                        <th>{str(x[-1].hour).zfill(2)}:{str(x[-1].minute).zfill(2)}</th>
+                        <th>{add}</th>
+                        <th> <input type="button" onclick="window.location.href='sekerFill.html?id={user.GetID()}';" value="הכנס סקר" /></th>
+                        <th><a href="chat.html?id={user.GetID()}">chat</a></th>
+                    <tr>"""
+                
+                page += """</table>
+                        <br><br>
+                        <input type="button" onclick="window.location.href='sekerFill.html';" value="הכנס סקר" />"""
+            page += """</div>
+            </body>
+                <script>
+                    <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }"""
+            page += f"""deleteAllCookies()
+                    document.cookie = "appraiser={user.GetID()};"
+                    let x = document.cookie
+                    console.log(x)
+                </script>
+            </html>"""
+            current_page.write(page)
+
+    def create_client_main(client):
+        print(client)
+        page = f"""<div class="main">
+                            <h1> שלום, {client.GetFirstName()} {client.GetLastName()}</h1>"""
+        if client.GetExeTime() == None:
+            page += """
+                    <a href="setDate.html"><button type="button">קבע תאריך</button></a>
+            </form>
+            <a href="chat.html">chat</a>
+            </div>"""
+        else:
+            page += f"""
+            <p>תאריך נוכחי</p>
+            <p>{client.GetExeTime()}</p>
+            <a href="setDate.html"><button type="button">שנה תאריך</button></a>
+            </form>
+            <a href="chat.html">chat</a>
+            </div>"""
+        return page
+    
+    def validated_client_page(client):
+        p_name = 'pages/clientSpace.html'
+        with open (p_name, 'w', encoding="utf-8") as current_page:
+            page = """<!DOCTYPE html>
+                <html>"""
+            page += STYLE + f"""
+                <meta charset="utf-8">
+                <!--header-->
+                <head>
+                    <title>יובי</title>    
+                </head>
+                <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+                <body>
+
+                    <div class="nav">
+                        <a href="home.html">התנתק</a>
+                    </div>""" 
+            page += CreatePages.create_client_main(client)
+            page += """ <a href="chat.html">chat</a>
+            </body>
+                <script>
+                    <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }"""
+            page += f"""deleteAllCookies()
+                    document.cookie = "client={client.GetID()};"
+                    let x = document.cookie
+                    console.log(x)
+                </script>
+            </html>"""
+            current_page.write(page)
+
+    def go_chat(user, send_to):
+        p_name = 'pages/chat.html'
+
+        with open(p_name, 'w', encoding="utf-8") as current_page:
+            page = chat.build_chat(user, send_to)
+            current_page.write(page)
+        return '/chat.html'
+    
+    
+
+ORM.PY:
+import pyodbc, pathlib, hashlib
+from datetime import *
+from usersClasses import *
+
+PATH = rf'{pathlib.Path().absolute()}'
+
+class ORM:
+
+    def count_users():    
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' + PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute('select count(*) from users')
+        
+        for row in cursor.fetchall():
+            print (row)
+
+    def updateSeker(sekerNum, sekerData):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        itemString = f"'{sekerData[0]}'"
+        sekerData = sekerData[1:]
+        itemCount = 0
+        for x in range(len(sekerData)):
+            if sekerData[x] != '':
+                if x%2 == 0:
+                    itemCount += 1
+                    itemString += f", {sekerData[x]}"
+                else:
+                    itemString += f", '{sekerData[x]}'"
+        cols = "SekerID, "
+        for x in range(int(itemCount - 1)):
+            cols += f"Item{x + 1}, Item{x + 1}Value, "
+        cols += f"Item{itemCount}, Item{itemCount}Value"
+        print(itemString, cols)
+        toExe = f"""Insert into SekerValues ({cols}) Values ({sekerNum}, {itemString})"""
+        print(toExe)
+        cursor.execute(f"""Insert into SekerValues ({cols}) Values ({sekerNum}, {itemString})""")
+        cursor.commit()
+
+    def updateCliSekerDate(day, hm, cliID):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+
+        cursor.execute(f"""update Seker set ExeDay = {day} where ClientId = {cliID}""")
+        conn.commit()
+    
+    def get_employee_data(uname, psw):
+        psw = hashlib.sha256(psw.encode()).hexdigest()
+        today = f'{str(datetime.now().day).zfill(2)}/{str(datetime.now().month).zfill(2)}/{datetime.now().year}'
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""select * from agents where Username = '{uname}' and Password = '{psw}'""")
+        rawData = cursor.fetchone()
+        if rawData is None:
+            return 'ERR1'
+        data = [x for x in rawData]
+        print(data)
+        
+        cursor.execute(f"""select Name, City, Street, CellPhone, ExeHour from Seker where AgentID = {data[0]} and Format(ExeDay, 'dd/mm/yyyy') = '{today}'""")
+        rawSekerData = cursor.fetchall()
+
+        if rawSekerData != []:
+            sekerData = []
+            for t in rawSekerData:
+                sekerData.append([x for x in t])
+            data.append(sekerData)
+        return data
+    
+    def get_app_by_id(id):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""select * from Agents where AgentId = {id}""")
+
+        data = cursor.fetchall()
+        if data != []:
+            res = []
+            for x in data[0]:
+                res.append(x)
+            print(res, len(res))
+            return res
+        return 'ERR1'
+    
+    def get_cli_by_id(id):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""select * from Clients where ClientId = {id}""")
+
+        data = cursor.fetchall()
+        if data != []:
+            res = []
+            for x in data[0]:
+                res.append(x)
+            print(res, len(res))
+            return res
+        return 'ERR1'
+    
+    def get_client_data(phone):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""select * from Clients where Phone = '{phone}'""")
+
+        data = cursor.fetchall()
+        if data != []:
+            res = []
+            for x in data[0]:
+                res.append(x)
+            print(res, len(res))
+            return res
+        return 'ERR1'
+    
+    def get_app_clients(user):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT ClientId, Name from Seker where AgentId = {user.GetID()}""")
+
+        data = cursor.fetchall()
+        options = []
+        names = []
+        for x in data:
+            options.append(x[0])
+            names.append(x[1])
+        print(options, names)
+        return options, names
+
+    def get_client_app(user):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT AgentId from Seker where ClientId = '{user.GetID()}'""")
+
+        data = cursor.fetchall()
+        print(data)
+        pass
+
+    def save_msg(client, agent, msg, who_sent):
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""Insert into Msgs (ClientId, AgentId, Msg, WhoSent) Values ({client}, {agent}, '{msg}', '{who_sent}')""")
+        conn.commit()
+
+    def get_user_msgs(id, u_type):
+        t = ''
+        if u_type == Appraiser:
+            u_type = 'Agent'
+        else:
+            u_type = 'Client'
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT * from Msgs where {u_type}Id = {id}""")
+
+        data = cursor.fetchall()
+        print('!!!!', data)
+        msgs = []
+        for x in data:
+            msgs.append(x)
+
+        if u_type == 'Agent':
+            cursor.execute(f"Select FirstName, LastName from Clients where ClientId = {msgs[0][1]}")
+            name = cursor.fetchall()[0]
+            name = name[0] + ' ' + name[1]
+        return name, msgs
+         
+
+
+
+
+
+PAGES:
+
+APPRAISERLOGIN.HTML:
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px;}
+        .main{position: relative; top: 10px; text-align:center;font-family: assistant;}
+    </style>
+
+    <meta charset="utf-8">
+
+    <!--header-->
+    <head>
+        <title>יובי</title>    
+    </head>
+
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <a href="home.html">דף הבית</a>
+        </div>
+        
+        <div class="main">
+            <h1>התחבר לאתר</h1>
+            <form action="/appraiserSpace.html">
+                <label for="uname"> <input type="text" placeholder="שם משתמש" name="uname" required> <b>שם משתמש</b> </label>
+                <br>
+                <label for="psw"><input type="password" placeholder="סיסמא" name="psw" required> <b>סיסמא</b></label>
+                <br><br>
+                <button type="submit">התחבר</button>
+            </form>
+
+        </div>
+    </body>
+    <script>
+        let x = document.cookie
+        console.log(x)
+    </script>
+</html>
+
+APPRAISERSPACE.HTML:
+<!DOCTYPE html>
+            <html>  <!--how will the page look-->
+        <style>
+        body {
+            background-color: #b2b2b2;
+            height: 500px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+        .nav a {color:black;text-align: right; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px; font-family: assistant; }
+        .main h1{position: relative; top: 10px; text-align:center;}
+        .contact{position: relative;text-align: right;font-size: 25px; font-family: assistant;}
+    </style>
+                <meta charset="utf-8">
+                <!--header-->
+                <head>
+                    <title>יובי</title>    
+                </head>
+                <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+                <body>
+
+                    <div class="nav">
+                        <a href="home.html">התנתק</a>
+                    </div>
+                    
+                    <div class="main">
+                        <h1>שלום, steve</h1><h2> אין לך כרגע כלום! <h2>
+                    <a href="chat.html">chat</a></div>
+            </body>
+                <script>
+                    <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }deleteAllCookies()
+                    document.cookie = "appraiser=1;"
+                    let x = document.cookie
+                    console.log(x)
+                </script>
+            </html>
+
+CHAT.HTML:
+<!DOCTYPE html>
+    <html>
+    <head>
+        <title>Chat</title>
+        <style>
+        body {
+            background-color: #b2b2b2;
+            font-family: 'assistant';
+        }
+        /* Chat window styles */
+        #chat-window {
+            width: 100%;
+            height: 500px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            overflow: auto;
+        }
+
+        /* Input field styles */
+        #chat-input {
+            width: 100%;
+            height: 50px;
+            font-size: 16px;
+            padding: 10px;
+            border: none;
+            border-top: 1px solid #ccc;
+        }
+
+        /* Message styles */
+        .message {
+            padding: 10px;
+            margin: 5px;
+            background-color: #f1f0f0;
+            border-radius: 5px;
+        }
+
+        /* Sender styles */
+        .sender {
+            font-weight: bold;
+            color: blue;
+        }
+        /* Sender styles */
+        .reciever {
+            font-weight: bold;
+            color: green;
+        }
+        </style>
+		<meta charset="utf-8">
+    </head>
+    <body>
+        <div class="nav">
+            <a href="home.html">התנתק</a>
+        </div>
+        <div id="chat-window">
+        <div class="message"><span class="sender">You: </span>got+it%3F<br><span class="reciever">Roni Weiss: </span>yes<br><span class="sender">You: </span>hi<br><span class="sender">You: </span>bye<br><span class="sender">You: </span>%D7%A9%D7%9C%D7%95%D7%9D<br><span class="sender">You: </span>%D7%A9%D7%9C%D7%95%D7%9D<br>
+        </div>
+        </div>
+        <form>
+        <select name="cli">
+                <input type="text" name="cliqq1qqmsgcon" id="chat-input" placeholder="Type your message...">
+        <button type="submit" onclick="sendMessage()">Send</button>
+        </form>
+        
+        <script>
+        function sendMessage() {
+            const message = document.getElementById('chat-input').value;
+            const chatWindow = document.getElementById('chat-window');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `<span class="sender">You:</span> ${message}`;
+            chatWindow.appendChild(messageDiv);
+        }
+        </script>
+    </body>
+    </html>
+    
+
+CLIENTLOGIN.HTML:
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px;}
+        .main{position: relative; top: 10px; text-align:center;font-family: assistant;}
+    </style>
+
+    <meta charset="utf-8">
+
+    <!--header-->
+    <head>
+        <title>יובי</title>    
+    </head>
+
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <a href="home.html">דף הבית</a>
+        </div>
+        
+        <div class="main">
+            <h1>התחבר לאתר</h1>
+            <form  action="/clientSpace.html">
+                <select id="area_code" name="ac">
+                    <option value="050">050</option>
+                    <option value="051">051</option>
+                    <option value="052">052</option>
+                    <option value="053">053</option>
+                    <option value="054">054</option>
+                    <option value="055">055</option>
+                    <option value="056">056</option>
+                    <option value="057">057</option>
+                    <option value="058">058</option>
+                    <option value="059">059</option>
+                </select>
+                <label for="cellnum"> <input type="text" placeholder="מספר טלפון" name="number" required> <b>מספר טלפון</b> </label>
+                <br><br>    
+                <button type="submit">התחבר</button>
+            </form>
+
+        </div>
+    </body>
+</html>
+
+CLIENTSPACE.HTML:
+<!DOCTYPE html>
+                <html> <!--how will the page look-->
+        <style>
+        body {
+            background-color: #b2b2b2;
+            height: 500px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+        .nav a {color:black;text-align: right; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px; font-family: assistant; }
+        .main h1{position: relative; top: 10px; text-align:center;}
+        .contact{position: relative;text-align: right;font-size: 25px; font-family: assistant;}
+    </style>
+                <meta charset="utf-8">
+                <!--header-->
+                <head>
+                    <title>יובי</title>    
+                </head>
+                <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+                <body>
+
+                    <div class="nav">
+                        <a href="home.html">התנתק</a>
+                    </div><div class="main">
+                            <h1> שלום, Roni Weiss</h1>
+            <p>תאריך נוכחי</p>
+            <p>2023-04-30 14:00:00</p>
+            <a href="setDate.html"><button type="button">שנה תאריך</button></a>
+            </form>
+            <a href="chat.html">chat</a>
+            </div> <a href="chat.html">chat</a>
+            </body>
+                <script>
+                    <!--document.cookie = -->
+                    function deleteAllCookies() {
+                        cookies = document.cookie.split(";");
+                        
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i];
+                            const eqPos = cookie.indexOf("=");
+                            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                        }
+                    }deleteAllCookies()
+                    document.cookie = "client=1;"
+                    let x = document.cookie
+                    console.log(x)
+                </script>
+            </html>
+
+DISCONNECT.HTML:
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        body {
+            background-color: #b2b2b2;
+            height: 500px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+        .nav a {color:black;text-align: right; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px; font-family: assistant; }
+        .main h1{position: relative; top: 10px; text-align:center;}
+        .contact{position: relative;text-align: right;font-size: 25px; font-family: assistant;}
+    </style>
+
+    <meta charset="utf-8">
+
+    <!--header-->
+    <head>
+        <title>יובי</title>    
+    </head>
+
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <b>  
+                <a href="appraiserLogin.html">התחברות סוקר</a>
+                <a href="clientLogin.html">כניסה לאזור הלקוח</a>                
+                <a href="home.html">פרטי תקשורת</a>
+            </b>
+            
+        </div>
+        
+        <div class="main">
+        </div>
+
+        <div class="contact">
+            <h2>צור קשר</h2>
+            <p>מספר טלפון: </p>
+            <p>email: uvgo2014@gmail.com </p>
+        </div>
+    </body>
+    <script>
+        function deleteAllCookies() {
+            cookies = document.cookie.split(";");
+            
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            }
+        }
+        deleteAllCookies()
+        document.cookie = "guest = anonymous"
+        let x = document.cookie;
+        console.log("!!!!!!!!");
+        console.log(x);
+        console.log("!!!!!!!!");
+
+        
+        
+    </script>
+</html>
+
+ERROR.HTML:
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        body {
+            background-color: red;
+            height: 500px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+        .nav a {color:black;text-align: right; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px; color: black;}
+        .main{position: relative; top: 10px; text-align:center;font-family: assistant;}
+    </style>
+
+    <meta charset="utf-8">
+
+    <!--header-->
+    <head>
+        <title>ERROR</title>
+            
+    </head>
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <a href="home.html">דף הבית</a>
+        </div>
+
+        <div class="main">
+            <h1>ERROR</h1>
+        </div>
+    </body>
+    <script>
+        function deleteAllCookies() {
+            cookies = document.cookie.split(";");
+            
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            }
+        }
+        deleteAllCookies()
+        document.cookie = "guest = anonymous"
+
+        let x = document.cookies
+        alert(x)
+        
+       
+    </script>
+</html>
+
+HOME.HTML:
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        body {
+            background-color: #b2b2b2;
+            height: 500px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+        .nav a {color:black;text-align: right; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px; font-family: assistant; }
+        .main h1{position: relative; top: 10px; text-align:center;}
+        .contact{position: relative;text-align: right;font-size: 25px; font-family: assistant;}
+    </style>
+
+    <meta charset="utf-8">
+
+    <!--header-->
+    <head>
+        <title>יובי</title>    
+    </head>
+
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <b>  
+                <a href="appraiserLogin.html">התחברות סוקר</a>
+                <a href="clientLogin.html">כניסה לאזור הלקוח</a>                
+                <a href="home.html">פרטי תקשורת</a>
+            </b>
+            
+        </div>
+        
+        <div class="main">
+        </div>
+
+        <div class="contact">
+            <h2>צור קשר</h2>
+            <p>מספר טלפון: </p>
+            <p>email: uvgo2014@gmail.com </p>
+        </div>
+    </body>
+    <script>
+        
+        function deleteAllCookies() {
+            cookies = document.cookie.split(";");
+            
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            }
+        }
+        deleteAllCookies()
+        document.cookie = "guest = anonymous"  
+        let x = document.cookie
+        console.log(x)   
+    </script>
+        </html>
+
+LOGIN.HTML:
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px;}
+        .main h1{position: relative; top: 10px; text-align:center;}
+    </style>
+
+    <!--header-->
+    <head>
+        <title>temp</title>    
+        <!--link rel="icon" href="properties/bumbleicon.ico"></link-->
+    </head>
+
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <a href="login.html">Log in</a>
+        </div>
+        
+        <div class="main">
+            <h1>log in</h1>
+            <form>
+                <label for="uname"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="uname" required><br>
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required><br>
+                <button type="submit">Login</button>
+            </form>
+
+        </div>
+    </body>
+</html>
+
+MAIL.HTML:
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Emails</title>
+    </head>
+    <style>
+        .panel { display: none; }
+        .show { display: block; }
+        .button { text-transform: uppercase; }
+        .button:hover { cursor: pointer; background-color: #fffff0; }
+    </style>
+    <meta charset="utf-8">
+
+    <body>
+        <h1>יש לך הודעות חדשות</h1>
+
+        <p>מייל מרוני</p>
+        <div class="buttons">
+            <button data-id="myorders" class="button">Orders</button>
+        </div>
+          
+        <div class="panel" id="myorders"><p>Laptop, Earphone</p></div>
+    </body>
+    <script>
+        const buttons = document.querySelector('.buttons');
+        const panels = document.querySelectorAll('.panel');
+
+        buttons.addEventListener('click', handleClick);
+
+        function handleClick(e) {
+        
+        if (e.target.matches('button')) {
+
+            panels.forEach(panel => panel.classList.remove('show'));
+
+            const { id } = e.target.dataset;
+
+            const selector = `.panel[id="${id}"]`;
+
+            // show class
+            document.querySelector(selector).classList.add('show');
+        }
+        }
+    </script>
+</html>
+
+SEKERFILL.HTML:
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+			body {font-family: Arial;}
+
+			/* Style the tab */
+			.tab {
+				overflow: hidden;
+				border: 1px solid #ccc;
+				background-color: #f1f1f1;
+			}
+
+			/* Style the buttons inside the tab */
+			.tab button {
+				background-color: inherit;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				transition: 0.3s;
+				font-size: 17px;
+			}
+
+			/* Change background color of buttons on hover */
+			.tab button:hover {
+				background-color: #ddd;
+			}
+
+			/* Create an active/current tablink class */
+			.tab button.active {
+				background-color: #ccc;
+			}
+
+			/* Style the tab content */
+			.tabcontent {
+				display: none;
+				padding: 6px 12px;
+				border: 1px solid #ccc;
+				border-top: none;
+			}
+		</style>
+		<meta charset="utf-8">
+	</head>
+	<body>
+
+		<form  action="/appraiserSpace.html" id="seker"></form>
+
+		<div class="tab">
+			<button class="tablinks" onclick="openCity(event, 'פרק 1')" id="defaultOpen">פרק</button>
+			<button class="tablinks" onclick="openCity(event, 'פרק 2')">פרק 2</button>
+			<button class="tablinks" onclick="openCity(event, 'פרק 3')">פרק 3</button>
+		</div>
+
+		<div id="פרק 1" class="tabcontent">
+			<table text-align="right">
+				<tr>
+					<td>שם מוצר</td>
+					<td>מחיר</td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i1" form="seker"/></td>
+					<td><input type="number" name="c1i1value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i2" form="seker"/></td>
+					<td><input type="number" name="c1i2value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i3" form="seker"/></td>
+					<td><input type="number" name="c1i3value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i4" form="seker"/></td>
+					<td><input type="number" name="c1i4value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c1i5" form="seker"/></td>
+					<td><input type="number" name="c1i5value"  form="seker" /></td>
+				</tr>
+			</table>  
+		</div>
+
+		<div id="פרק 2" class="tabcontent">
+			<table text-align="right">
+				<tr>
+					<td>שם מוצר</td>
+					<td>מחיר</td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i1" form="seker"/></td>
+					<td><input type="number" name="c4i1value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i2" form="seker"/></td>
+					<td><input type="number" name="c4i2value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i3" form="seker"/></td>
+					<td><input type="number" name="c4i3value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i4" form="seker"/></td>
+					<td><input type="number" name="c4i4value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c4i5" form="seker"/></td>
+					<td><input type="number" name="c4i5value"  form="seker" /></td>
+				</tr>
+			</table>  
+		</div>
+
+		<div id="פרק 3" class="tabcontent">
+			<table text-align="right">
+				<tr>
+					<td>שם מוצר</td>
+					<td>מחיר</td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i1" form="seker"/></td>
+					<td><input type="number" name="c3i1value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i2" form="seker"/></td>
+					<td><input type="number" name="c3i2value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i3" form="seker"/></td>
+					<td><input type="number" name="c3i3value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i4" form="seker"/></td>
+					<td><input type="number" name="c3i4value"  form="seker" /></td>
+				</tr>
+				<tr>
+					<td><input type="text" name="c3i5" form="seker"/></td>
+					<td><input type="number" name="c3i5value"  form="seker" /></td>
+				</tr>
+			</table>  
+			<button type="button" class="add_field">Add field</button>
+			<button type="submit" form="seker">הגש טופס</button>
+		</div>
+
+		<script>
+			function openCity(evt, cityName) {
+			var i, tabcontent, tablinks;
+			tabcontent = document.getElementsByClassName("tabcontent");
+			for (i = 0; i < tabcontent.length; i++) {
+				tabcontent[i].style.display = "none";
+			}
+			tablinks = document.getElementsByClassName("tablinks");
+			for (i = 0; i < tablinks.length; i++) {
+				tablinks[i].className = tablinks[i].className.replace(" active", "");
+			}
+			document.getElementById(cityName).style.display = "block";
+				evt.currentTarget.className += " active";
+			}
+
+			// Get the element with id="defaultOpen" and click on it
+			document.getElementById("defaultOpen").click();
+
+			$(document).on('click', '.add_field', function() {
+			$('<input type="text" class="input" name="field[]" value="">').insertAfter('.input:last');})
+		</script>
+	
+	</body>
+</html> 
+
+
+SETDATE.HTML:
+<!DOCTYPE html>
+<html>
+    <!--how will the page look-->
+    <style>
+        .nav a {color:black;text-align: center; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px;}
+        .main{position: relative; top: 10px; text-align:center;font-family: assistant;}
+    </style>
+
+    <meta charset="utf-8">
+
+    <!--header-->
+    <head>
+        <title>יובי</title>    
+    </head>
+
+    <!--body: contains navigation bar and the main part, which contains some info about the team and a video-->
+    <body>
+
+        <div class="nav">
+            <a href="home.html">דף הבית</a>
+        </div>
+        
+        <div class="main">
+            <h1>הכנס את התאריך הנוח לך</h1>
+            <form action="/clientSpace.html">
+                <input type="date" id="selectedDate" name = "selectedDate">
+                <input type="time" id="selectedTime" name = "selectedTime">
+                <button type="submit">שלח</button>
+            </form>
+
+        </div>
+    </body>
+    <script>
+        
+        let x = document.cookie
+        console.log(x)
+    </script>
+</html>
+
+VALIDATEDUSERHOME.HTML:
+
+
+WRITEMAIL.HTML:
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Email</title>
+    <style>
+      /* Form styles */
+      #email-form {
+        width: 500px;
+        margin: auto;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      /* Input field styles */
+      label {
+        display: block;
+        margin-bottom: 10px;
+      }
+      input[type="text"], textarea {
+        width: 100%;
+        height: 30px;
+        font-size: 16px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      textarea {
+        height: 150px;
+      }
+
+      /* Button styles */
+      button[type="submit"] {
+        display: block;
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="email-form" method="post" action="send-email.php">
+      <label for="recipient">Recipient:</label>
+      <input type="text" id="recipient" name="recipient" required>
+      
+      <label for="subject">Subject:</label>
+      <input type="text" id="subject" name="subject" required>
+      
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+      
+      <button type="submit">Send</button>
+    </form>
+  </body>
+</html>
+
+
+SERVER.PY:
+import socket, threading, os
+import datetime
+from ORM import *
+from usersClasses import * 
+from createPages import CreatePages
+from chat import *
+
+IP_PORT = ('0.0.0.0', 80)
+clients = []
+LINE = r'\r\n'
+current_page = ''
+
+
+def file_content_type(file_name):
+    path = ''
+    content = ''
+    if file_name == '/':
+        file_name = '/home.html' 
+    if "favicon" in file_name:
+        return ""
+    f_type = file_name.split('.')[-1]
+    file_name = '\\' + file_name[1:]
+    if os.path.exists(f'pages{file_name}'):
+        path = f'pages{file_name}'
+    elif os.path.exists(f'assests{file_name}'):
+        path = f'assests{file_name}'
+    if path == '':
+        return 'Err'
+    print(path)
+    c_file = open(path, 'r', encoding="utf-8")
+    content += '\n'.join(x for x in c_file.readlines())
+    c_file.close()
+    print(content)
+    return [f_type, content] 
+
+
+def website_request(file_name,):
+    file_content = file_content_type(file_name) 
+    if 'Err' in file_content:
+        return ''
+    length = str(len(str(file_content[1])))
+    answer = 'HTTP/1.1 200 OK' + LINE 
+    answer += 'Content-Length: ' + length + LINE
+    answer  += f'Content-Type: {file_content[0]}; charset=utf-8' + LINE 
+    answer += LINE
+    answer += file_content[1]  
+    return answer
+
+
+def validate_user(params):
+    user = []
+    if type(params) == type([]):
+        user.append('ap')
+        data = ORM.get_employee_data(params[0], params[1])
+        if data == 'ERR1':
+            return 'ERR1'
+        user.append(Appraiser(data[0], data[1], data[-1]))
+        print(user[1])
+    else:
+        user.append('cli')
+        data = ORM.get_client_data(params)
+        print(data)
+        if data == 'ERR1':
+            return 'ERR1'
+        add = Address(data[7], data[8], data[9])
+        if data[5] != None and data[6] != None:
+            exeTime = datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+        else:
+            exeTime = None
+        user.append(Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10]))
+    return user
+
+
+def extract_date(data):
+    extract = data.split('?')
+    web = extract[0]
+    splitDateTime = extract[-1].split('=')
+    ymd = splitDateTime[1].split('&')[0]
+    hm = splitDateTime[-1].split('%3A')
+    hm = f'{hm[0].zfill(2)}:{hm[-1].zfill(2)}'
+    print(ymd, hm)
+    return web, ymd, hm
+
+def get_user_from_cookie(cookie):
+    print(cookie)
+    user = ''
+    if cookie == None:
+        return 'Err'
+    c_type, c_id = cookie[1].split('=')
+    if c_type == 'appraiser':
+        data = ORM.get_app_by_id(c_id)
+        user = Appraiser(data[0], data[1], data[-1])
+    else:
+        data = ORM.get_cli_by_id(c_id)
+        add = Address(data[7], data[8], data[9])
+        if data[5] != None and data[6] != None:
+            exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+        else:
+            exeTime = None
+        user = Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10])
+    return user
+
+def extract_login_answer(data):
+    web = data.split('?')[0]
+    fields = data.split('?')[1].split('=')
+    username = fields[1].split('&')[0]
+    password = fields[2] 
+    return [username, password], web
+ 
+def extractSekerData(formAnswers):
+    web, dataOnly = formAnswers.split('?')[0], formAnswers.split('?')[1]
+    dataOnly = dataOnly.split('&')
+    print(web, dataOnly)
+    sekerId = dataOnly[0].split('=')[1]
+    itemsNprices = [x.split('=')[1] for x in dataOnly[1:]]
+    return web, sekerId, itemsNprices
+
+def build_answer(fields, cookie):
+    print(cookie)
+    ans = ''
+    web = None
+    if fields[0] == 'GET':
+        if '?' in fields[1]:
+            if 'uname' in fields[1] or 'number' in fields[1]:
+                details, web = extract_login_answer(fields[1])
+                print(web)
+                if '05' in details[0]:
+                    details = details[0] + '-' + details[1]
+                user = validate_user(details)
+                if user == 'ERR1':
+                    web = '/Error.html'
+                elif user[0] == 'ap':
+                    CreatePages.validated_appraiser_page(user[1])
+                elif user[0] == 'cli':
+                    CreatePages.validated_client_page(user[1])
+                fields = ['', web]
+            elif 'selected' in fields[1]:
+                web, dateSelected, timeSelected = extract_date(fields[1])
+                ORM.updateCliSekerDate(dateSelected, timeSelected, cookie[-1].split('=')[-1])
+                fields = ['', web]
+            elif 'Seker' in fields[1]:
+                web, sekerId, sekerData = extractSekerData(fields[1])
+                ORM.updateSeker(sekerId, sekerData)
+                fields = ['', web]
+            elif 'msg' in fields[1]:
+                print(fields[1])
+                reciever, msg = fields[1].split('?')[1].split('=')
+                reciever = [reciever.split('qq')[0], reciever.split('qq')[1]]
+                print(reciever, msg)
+                res = update_send_msg(reciever, msg, cookie)
+                web = fields[1].split('?')[0]
+                print(web)
+                fields = ['', web]
+                print(web)
+            elif 'chat' in fields[1]:
+                send_to = fields[1].split("?")[1].split("=")[1]
+                print(send_to)
+                user = get_user_from_cookie(cookie)
+                print(user, type(user))
+                web = CreatePages.go_chat(user, send_to)
+                fields = ['', web]
+                print(web)
+        if '/' in fields[1] and '?' not in fields[1]:
+            ans = website_request(fields[1])
+    return ans
+
+
+def handle_client(c_sock, addres, id):
+    i = 0
+    data = c_sock.recv(1024).decode()
+    print("CURRENT REQUEST:\n",data)
+    cookie = data.split('\r\n')[-3].split()
+    fields = data.split('\r\n')[0].split()
+    response = build_answer(fields, cookie) 
+    if response is not None:
+        c_sock.send(response.encode())
+    c_sock.close()
+
+def main():
+    s = socket.socket()
+
+    s.bind(IP_PORT)
+    s.listen(100)
+    i = 0
+    while i < 100:
+        c, add = s.accept()
+        print("connected")
+        t = threading.Thread(target=handle_client, args=(c,add, i))
+        t.start()
+        clients.append(t)
+        i += 1
+
+    s.close()
+    pass
+
+
+if __name__ == '__main__':
+    main()
+
+
+TRIES.PY:
+import pyodbc, pathlib
+from datetime import *
+import hashlib
+
+PATH = rf'{pathlib.Path().absolute()}'
+
+def get_client_data(phone):
+    conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+    cursor = conn.cursor()
+    cursor.execute(f"""select * from Clients where Phone = '{phone}'""")
+
+    data = cursor.fetchall()
+    if data != []:
+        res = []
+        for x in data[0]:
+            res.append(x)
+        return res
+    return 'ERR1'
+
+# print(get_client_data('054-9918135'))
+
+def convert_to_sha2(psw):
+    return hashlib.sha256(psw.encode()).hexdigest()
+
+print(convert_to_sha2('1234'))
+
+USERSCLASSES.PY:
+class Appraiser:
+
+    def __init__(self, id, name, skarim):
+        self.id = id
+        self.name = name
+        self.skarim = skarim
+
+    def GetID(self):
+        return self.id
+    
+    def GetName(self):
+        return self.name
+    
+    def GetSkarim(self):
+        return self.skarim
+
+
+class Address:
+    def __init__(self, city, street, aptnum):
+        self.city = city
+        self.street = street
+        self.aptnum = aptnum
+
+    def GetCity(self):
+        return self.city
+    
+    def GetStreet(self):
+        return self.street
+    
+    def GetAptnum(self):
+        return self.aptnum
+    
+    def SetCity(self, city):
+        self.city = city
+    
+    def SetStreet(self, street):
+        self.street = street
+    
+    def SetAptnum(self, aptnum):
+        self.aptnum = aptnum
+       
+class Client:
+
+    def __init__(self, id, fname, lname, sekerId, phone, address, exeTime, appraiserId):
+        self.id = id
+        self.fname = fname
+        self.lname = lname
+        self.sekerId = sekerId
+        self.phone = phone
+        self.address = address
+        self.exeTime = exeTime
+        self.appraiserId = appraiserId
+    
+    def GetID(self):
+        return self.id
+    
+    def GetFirstName(self):
+        return self.fname
+
+    def GetLastName(self):
+        return self.lname
+    
+    def GetSekerId(self):
+        return self.sekerId
+    
+    def GetExeTime(self):
+        return self.exeTime
+
+    def SetExeTime(self, exeTime):
+        self.exeTime = exeTime
+
+    def __str__(self):
+        return f"""name: {self.fname} {self.lname}\n
+                    index: {self.id}
+                    Exetime: {self.exeTime}"""
+

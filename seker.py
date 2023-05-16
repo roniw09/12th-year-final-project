@@ -1,4 +1,7 @@
-
+def create_seker(client):
+    p_name = 'pages/sekerFill.html'
+    with open (p_name, 'w', encoding="utf-8") as current_page:
+        page = """
                 <!DOCTYPE html>
                 <html>
                     <head>
@@ -55,9 +58,12 @@
                             <button class="tablinks" onclick="openCity(event, 'פרק 3')">פרק 3</button>
                         </div>
 
-                        <div id="פרק 1" class="tabcontent"><select id="cli_id" name="cli_id" form="seker">
-                        <option value="1">1</option>
-                    </select><table text-align="right">
+                        <div id="פרק 1" class="tabcontent">"""
+        page += f"""<select id="cli_id" name="cli_id" form="seker">
+                        <option value="{client}">{client}</option>
+                    </select>"""
+
+        page += """<table text-align="right">
                     <tr>
                         <td>שם מוצר</td>
                         <td>מחיר</td>
@@ -169,4 +175,5 @@
                 
                 </body>
             </html> 
-            
+            """
+        current_page.write(page)

@@ -14,28 +14,21 @@ class ORM:
         for row in cursor.fetchall():
             print (row)
 
-    def updateSeker(sekerNum, sekerData):
+    def updateSeker(ClientId, sekerData):
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
-        itemString = f"'{sekerData[0]}'"
-        sekerData = sekerData[1:]
-        itemCount = 0
-        for x in range(len(sekerData)):
-            if sekerData[x] != '':
-                if x%2 == 0:
-                    itemCount += 1
-                    itemString += f", {sekerData[x]}"
-                else:
-                    itemString += f", '{sekerData[x]}'"
-        cols = "SekerID, "
-        for x in range(int(itemCount - 1)):
-            cols += f"Item{x + 1}, Item{x + 1}Value, "
-        cols += f"Item{itemCount}, Item{itemCount}Value"
-        print(itemString, cols)
-        toExe = f"""Insert into SekerValues ({cols}) Values ({sekerNum}, {itemString})"""
-        print(toExe)
-        cursor.execute(f"""Insert into SekerValues ({cols}) Values ({sekerNum}, {itemString})""")
-        cursor.commit()
+        c1, c2, c3 = sekerData
+        itemString = f"'{ClientId}'"
+        cols = "ClientId, Chapter, Item, ItemValue"
+        qList = []
+        for n in range(len(sekerData)):
+            for x in range(0, len(sekerData[n]), 2):
+                if sekerData[n][x] != '':
+                    to_exe = f"""Insert into SekerValues ({cols}) Values ({ClientId}, {n}, '{sekerData[n][x]}', '{sekerData[n][x + 1]}')"""
+                    print(to_exe)
+                    cursor.execute(to_exe)
+        print(qList)
+       
 
     def updateCliSekerDate(day, hm, cliID):
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')

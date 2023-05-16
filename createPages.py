@@ -121,10 +121,7 @@ class CreatePages:
                         <th> <input type="button" onclick="window.location.href='sekerFill.html?id={user.GetID()}';" value="הכנס סקר" /></th>
                         <th><a href="chat.html?id={user.GetID()}">chat</a></th>
                     <tr>"""
-                
-                page += """</table>
-                        <br><br>
-                        <input type="button" onclick="window.location.href='sekerFill.html';" value="הכנס סקר" />"""
+
             page += """</div>
             </body>
                 <script>
@@ -185,7 +182,7 @@ class CreatePages:
                         <a href="home.html">התנתק</a>
                     </div>""" 
             page += CreatePages.create_client_main(client)
-            page += """ <a href="chat.html">chat</a>
+            page += """
             </body>
                 <script>
                     <!--document.cookie = -->
