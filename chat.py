@@ -3,6 +3,9 @@ from ORM import *
 
 
 def build_chat(user, send_to):
+    """
+        builds chat interface
+    """
     u_type = type(user)
     if u_type == 'Client':
         u_type = 'client'
@@ -109,6 +112,9 @@ def build_chat(user, send_to):
     return page
 
 def update_send_msg(who_to, msg, cookie):
+    """
+        saves messages into db
+    """
     print (who_to, msg, cookie)
     who_sent = ''
     if cookie[1].split('=')[0] == 'appraiser':
@@ -118,6 +124,9 @@ def update_send_msg(who_to, msg, cookie):
     ORM.save_msg(who_to[1], cookie[1].split('=')[1], msg, who_sent)
 
 def insert_msg(user):
+    """
+        uploads new messages into the interface
+    """
     id = user.GetID()
     n, prev = ORM.get_user_msgs(id, type(user), )
     return n, prev

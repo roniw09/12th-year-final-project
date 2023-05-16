@@ -7,6 +7,9 @@ PATH = rf'{pathlib.Path().absolute()}'
 class ORM:
 
     def updateSeker(ClientId, sekerData):
+        """
+            updates seker data
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         c1, c2, c3 = sekerData
@@ -23,6 +26,9 @@ class ORM:
        
 
     def updateCliSekerDate(day, hm, cliID):
+        """
+            updtes seker date
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
 
@@ -30,6 +36,9 @@ class ORM:
         conn.commit()
     
     def get_employee_data(uname, psw):
+        """
+            returns employee data by username and password
+        """
         psw = hashlib.sha256(psw.encode()).hexdigest()
         today = f'{str(datetime.now().day).zfill(2)}/{str(datetime.now().month).zfill(2)}/{datetime.now().year}'
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
@@ -52,6 +61,9 @@ class ORM:
         return data
     
     def get_app_by_id(id):
+        """
+            returns employee data by id
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""select * from Agents where AgentId = {id}""")
@@ -66,6 +78,9 @@ class ORM:
         return 'ERR1'
     
     def get_cli_by_id(id):
+        """
+            returns client data by id
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""select * from Clients where ClientId = {id}""")
@@ -80,6 +95,9 @@ class ORM:
         return 'ERR1'
     
     def get_client_data(phone):
+        """
+            returns client data by phone
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""select * from Clients where Phone = '{phone}'""")
@@ -98,6 +116,9 @@ class ORM:
         return 'ERR1'
     
     def get_app_clients(user):
+        """
+            returns the specific appraiser client's names
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""SELECT ClientId, Name from Seker where AgentId = {user.GetID()}""")
@@ -112,6 +133,9 @@ class ORM:
         return options, names
 
     def get_client_app(user):
+        """
+            returns the specific client appraiser's names
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""SELECT AgentId from Seker where ClientId = '{user.GetID()}'""")
@@ -121,12 +145,18 @@ class ORM:
         pass
 
     def save_msg(client, agent, msg, who_sent):
+        """
+            insert messages into db
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""Insert into Msgs (ClientId, AgentId, Msg, WhoSent) Values ({client}, {agent}, '{msg}', '{who_sent}')""")
         conn.commit()
 
     def get_user_msgs(id, u_type):
+        """
+            get messages from db
+        """
         t = ''
         if u_type == Appraiser:
             u_type = 'Agent'

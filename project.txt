@@ -1,8 +1,140 @@
 CHAT.PY:
+from usersClasses import Appraiser, Client
+from ORM import * 
+
+
+def build_chat(user, send_to):
+    """
+        builds chat interface
+    """
+    u_type = type(user)
+    if u_type == 'Client':
+        u_type = 'client'
+    else: u_type = 'agent'
+    c_name, prev = insert_msg(user)
+    page = """<!DOCTYPE html>
+    <html>
+    <head>
+        <title>Chat</title>
+        <style>
+        body {
+            background-color: #b2b2b2;
+            font-family: 'assistant';
+        }
+        /* Chat window styles */
+        #chat-window {
+            width: 100%;
+            height: 500px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            overflow: auto;
+        }
+
+        /* Input field styles */
+        #chat-input {
+            width: 100%;
+            height: 50px;
+            font-size: 16px;
+            padding: 10px;
+            border: none;
+            border-top: 1px solid #ccc;
+        }
+
+        /* Message styles */
+        .message {
+            padding: 10px;
+            margin: 5px;
+            background-color: #f1f0f0;
+            border-radius: 5px;
+        }
+
+        /* Sender styles */
+        .sender {
+            font-weight: bold;
+            color: blue;
+        }
+        /* Sender styles */
+        .reciever {
+            font-weight: bold;
+            color: green;
+        }
+        </style>
+		<meta charset="utf-8">
+    </head>
+    <body>
+        <div class="nav">
+            <a href="home.html">התנתק</a>
+        </div>
+        <div id="chat-window">
+        <div class="message">"""
+    
+    for x in prev:
+        print(prev)
+        if u_type == x[-1]:
+            u_name = 'You:'
+            page += f'<span class="sender">{u_name} </span>{x[3]}<br>'
+        else:
+            u_name = c_name + ':'
+            page += f'<span class="reciever">{u_name} </span>{x[3]}<br>'
+
+    page += f"""
+        </div>
+        </div>
+        <form>
+        """
+    rec_type = ''
+    print(type(user))
+    if type(user) == Appraiser:
+        rec_type = 'cli'
+    else:
+        rec_type = 'agent'
+    print(type(user), rec_type)
+    page += f"""<select name="{rec_type}">"""
+        
+    page += f"""
+                <input type="text" name="{rec_type}qq{send_to}qqmsgcon" id="chat-input" placeholder="Type your message...">"""
+    page += """
+        <button type="submit" onclick="sendMessage()">Send</button>
+        </form>
+        
+        <script>
+        function sendMessage() {
+            const message = document.getElementById('chat-input').value;
+            const chatWindow = document.getElementById('chat-window');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.innerHTML = `<span class="sender">You:</span> ${message}`;
+            chatWindow.appendChild(messageDiv);
+        }
+        </script>
+    </body>
+    </html>
+    """
+    return page
+
+def update_send_msg(who_to, msg, cookie):
+    """
+        saves messages into db
+    """
+    print (who_to, msg, cookie)
+    who_sent = ''
+    if cookie[1].split('=')[0] == 'appraiser':
+        who_sent = 'agent'
+    else:
+        who_sent = 'client'
+    ORM.save_msg(who_to[1], cookie[1].split('=')[1], msg, who_sent)
+
+def insert_msg(user):
+    """
+        uploads new messages into the interface
+    """
+    id = user.GetID()
+    n, prev = ORM.get_user_msgs(id, type(user), )
+    return n, prev
 
 
 CREATEPAGES.PY:
-import webbrowser, chat
+import chat
 from usersClasses import *
 
 HEADER = "<!DOCTYPE html>"
@@ -34,6 +166,9 @@ class CreatePages:
             current_page.truncate(0)
 
     def validated_user_home(type):
+        """
+            creates homepage
+        """
         p_name = "pages/validatedUserHome.html"
         with open(p_name, "w", encoding="utf-8") as current_page:
             nav = ''
@@ -82,6 +217,9 @@ class CreatePages:
 
 
     def validated_appraiser_page(user):
+        """
+            creates the appraiser page after validation
+        """
         p_name = 'pages/appraiserSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
@@ -125,10 +263,7 @@ class CreatePages:
                         <th> <input type="button" onclick="window.location.href='sekerFill.html?id={user.GetID()}';" value="הכנס סקר" /></th>
                         <th><a href="chat.html?id={user.GetID()}">chat</a></th>
                     <tr>"""
-                
-                page += """</table>
-                        <br><br>
-                        <input type="button" onclick="window.location.href='sekerFill.html';" value="הכנס סקר" />"""
+
             page += """</div>
             </body>
                 <script>
@@ -151,7 +286,11 @@ class CreatePages:
             </html>"""
             current_page.write(page)
 
+
     def create_client_main(client):
+        """
+            creates the clients main according to execute hour
+        """
         print(client)
         page = f"""<div class="main">
                             <h1> שלום, {client.GetFirstName()} {client.GetLastName()}</h1>"""
@@ -171,7 +310,11 @@ class CreatePages:
             </div>"""
         return page
     
+
     def validated_client_page(client):
+        """
+            creates the client page after validation
+        """
         p_name = 'pages/clientSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
@@ -189,7 +332,7 @@ class CreatePages:
                         <a href="home.html">התנתק</a>
                     </div>""" 
             page += CreatePages.create_client_main(client)
-            page += """ <a href="chat.html">chat</a>
+            page += """
             </body>
                 <script>
                     <!--document.cookie = -->
@@ -212,6 +355,9 @@ class CreatePages:
             current_page.write(page)
 
     def go_chat(user, send_to):
+        """
+            creates chat
+        """
         p_name = 'pages/chat.html'
 
         with open(p_name, 'w', encoding="utf-8") as current_page:
@@ -230,38 +376,29 @@ PATH = rf'{pathlib.Path().absolute()}'
 
 class ORM:
 
-    def count_users():    
-        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' + PATH + r'\DemiDB.mdb')
-        cursor = conn.cursor()
-        cursor.execute('select count(*) from users')
-        
-        for row in cursor.fetchall():
-            print (row)
-
-    def updateSeker(sekerNum, sekerData):
+    def updateSeker(ClientId, sekerData):
+        """
+            updates seker data
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
-        itemString = f"'{sekerData[0]}'"
-        sekerData = sekerData[1:]
-        itemCount = 0
-        for x in range(len(sekerData)):
-            if sekerData[x] != '':
-                if x%2 == 0:
-                    itemCount += 1
-                    itemString += f", {sekerData[x]}"
-                else:
-                    itemString += f", '{sekerData[x]}'"
-        cols = "SekerID, "
-        for x in range(int(itemCount - 1)):
-            cols += f"Item{x + 1}, Item{x + 1}Value, "
-        cols += f"Item{itemCount}, Item{itemCount}Value"
-        print(itemString, cols)
-        toExe = f"""Insert into SekerValues ({cols}) Values ({sekerNum}, {itemString})"""
-        print(toExe)
-        cursor.execute(f"""Insert into SekerValues ({cols}) Values ({sekerNum}, {itemString})""")
-        cursor.commit()
+        c1, c2, c3 = sekerData
+        itemString = f"'{ClientId}'"
+        cols = "ClientId, Chapter, Item, ItemValue"
+        qList = []
+        for n in range(len(sekerData)):
+            for x in range(0, len(sekerData[n]), 2):
+                if sekerData[n][x] != '':
+                    to_exe = f"""Insert into SekerValues ({cols}) Values ({ClientId}, {n}, '{sekerData[n][x]}', '{sekerData[n][x + 1]}')"""
+                    print(to_exe)
+                    cursor.execute(to_exe)
+        print(qList)
+       
 
     def updateCliSekerDate(day, hm, cliID):
+        """
+            updtes seker date
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
 
@@ -269,6 +406,9 @@ class ORM:
         conn.commit()
     
     def get_employee_data(uname, psw):
+        """
+            returns employee data by username and password
+        """
         psw = hashlib.sha256(psw.encode()).hexdigest()
         today = f'{str(datetime.now().day).zfill(2)}/{str(datetime.now().month).zfill(2)}/{datetime.now().year}'
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
@@ -291,6 +431,9 @@ class ORM:
         return data
     
     def get_app_by_id(id):
+        """
+            returns employee data by id
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""select * from Agents where AgentId = {id}""")
@@ -305,6 +448,9 @@ class ORM:
         return 'ERR1'
     
     def get_cli_by_id(id):
+        """
+            returns client data by id
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""select * from Clients where ClientId = {id}""")
@@ -319,6 +465,9 @@ class ORM:
         return 'ERR1'
     
     def get_client_data(phone):
+        """
+            returns client data by phone
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""select * from Clients where Phone = '{phone}'""")
@@ -329,10 +478,17 @@ class ORM:
             for x in data[0]:
                 res.append(x)
             print(res, len(res))
-            return res
+            cursor.execute(f"""select ExeDay, ExeHour from Seker where ClientId = {res[0]}""")
+            print('exe')
+            d2 = cursor.fetchone()
+            exe_date = [x for x in d2]
+            return res, exe_date
         return 'ERR1'
     
     def get_app_clients(user):
+        """
+            returns the specific appraiser client's names
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""SELECT ClientId, Name from Seker where AgentId = {user.GetID()}""")
@@ -347,6 +503,9 @@ class ORM:
         return options, names
 
     def get_client_app(user):
+        """
+            returns the specific client appraiser's names
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""SELECT AgentId from Seker where ClientId = '{user.GetID()}'""")
@@ -356,12 +515,18 @@ class ORM:
         pass
 
     def save_msg(client, agent, msg, who_sent):
+        """
+            insert messages into db
+        """
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""Insert into Msgs (ClientId, AgentId, Msg, WhoSent) Values ({client}, {agent}, '{msg}', '{who_sent}')""")
         conn.commit()
 
     def get_user_msgs(id, u_type):
+        """
+            get messages from db
+        """
         t = ''
         if u_type == Appraiser:
             u_type = 'Agent'
@@ -462,8 +627,28 @@ APPRAISERSPACE.HTML:
                     </div>
                     
                     <div class="main">
-                        <h1>שלום, steve</h1><h2> אין לך כרגע כלום! <h2>
-                    <a href="chat.html">chat</a></div>
+                        <h1>שלום, steve</h1><table border="2" style="width:50%; align-content: center; text-align: center">
+                        <tr>
+                            <th>שם</th>
+                            <th>שעה</th>
+                            <th>כתובת</th>
+                            <th>מלא סקר</th>
+                            <th>צ'אט</th>
+                        </tr>
+                    <tr>
+                        <th>Roni</th>
+                        <th>12:50</th>
+                        <th>Tom Lantos 549020077, Netanya</th>
+                        <th> <input type="button" onclick="window.location.href='sekerFill.html?id=1';" value="הכנס סקר" /></th>
+                        <th><a href="chat.html?id=1">chat</a></th>
+                    <tr>
+                    <tr>
+                        <th>Anna Lith</th>
+                        <th>14:00</th>
+                        <th>A 505050505, Away</th>
+                        <th> <input type="button" onclick="window.location.href='sekerFill.html?id=1';" value="הכנס סקר" /></th>
+                        <th><a href="chat.html?id=1">chat</a></th>
+                    <tr></div>
             </body>
                 <script>
                     <!--document.cookie = -->
@@ -538,7 +723,7 @@ CHAT.HTML:
             <a href="home.html">התנתק</a>
         </div>
         <div id="chat-window">
-        <div class="message"><span class="sender">You: </span>got+it%3F<br><span class="reciever">Roni Weiss: </span>yes<br><span class="sender">You: </span>hi<br><span class="sender">You: </span>bye<br><span class="sender">You: </span>%D7%A9%D7%9C%D7%95%D7%9D<br><span class="sender">You: </span>%D7%A9%D7%9C%D7%95%D7%9D<br>
+        <div class="message"><span class="reciever">Roni Weiss: </span>yes<br><span class="sender">You: </span>hi<br><span class="sender">You: </span>bye<br>
         </div>
         </div>
         <form>
@@ -639,11 +824,11 @@ CLIENTSPACE.HTML:
                     </div><div class="main">
                             <h1> שלום, Roni Weiss</h1>
             <p>תאריך נוכחי</p>
-            <p>2023-04-30 14:00:00</p>
+            <p>2023-05-17 12:50:00</p>
             <a href="setDate.html"><button type="button">שנה תאריך</button></a>
             </form>
             <a href="chat.html">chat</a>
-            </div> <a href="chat.html">chat</a>
+            </div>
             </body>
                 <script>
                     <!--document.cookie = -->
@@ -829,10 +1014,12 @@ HOME.HTML:
         </div>
         
         <div class="main">
+            <h1>יובי שמאות וסקרים בע"מ</h1>
+            <h3>חברת סקרים, הוקמה בשנת 1998</h3>
         </div>
 
         <div class="contact">
-            <h2>צור קשר</h2>
+            <h4>צור קשר</h4>
             <p>מספר טלפון: </p>
             <p>email: uvgo2014@gmail.com </p>
         </div>
@@ -941,176 +1128,178 @@ MAIL.HTML:
 </html>
 
 SEKERFILL.HTML:
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<style>
-			body {font-family: Arial;}
 
-			/* Style the tab */
-			.tab {
-				overflow: hidden;
-				border: 1px solid #ccc;
-				background-color: #f1f1f1;
-			}
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <style>
+                            body {font-family: Arial;}
 
-			/* Style the buttons inside the tab */
-			.tab button {
-				background-color: inherit;
-				float: left;
-				border: none;
-				outline: none;
-				cursor: pointer;
-				padding: 14px 16px;
-				transition: 0.3s;
-				font-size: 17px;
-			}
+                            /* Style the tab */
+                            .tab {
+                                overflow: hidden;
+                                border: 1px solid #ccc;
+                                background-color: #f1f1f1;
+                            }
 
-			/* Change background color of buttons on hover */
-			.tab button:hover {
-				background-color: #ddd;
-			}
+                            /* Style the buttons inside the tab */
+                            .tab button {
+                                background-color: inherit;
+                                float: left;
+                                border: none;
+                                outline: none;
+                                cursor: pointer;
+                                padding: 14px 16px;
+                                transition: 0.3s;
+                                font-size: 17px;
+                            }
 
-			/* Create an active/current tablink class */
-			.tab button.active {
-				background-color: #ccc;
-			}
+                            /* Change background color of buttons on hover */
+                            .tab button:hover {
+                                background-color: #ddd;
+                            }
 
-			/* Style the tab content */
-			.tabcontent {
-				display: none;
-				padding: 6px 12px;
-				border: 1px solid #ccc;
-				border-top: none;
-			}
-		</style>
-		<meta charset="utf-8">
-	</head>
-	<body>
+                            /* Create an active/current tablink class */
+                            .tab button.active {
+                                background-color: #ccc;
+                            }
 
-		<form  action="/appraiserSpace.html" id="seker"></form>
+                            /* Style the tab content */
+                            .tabcontent {
+                                display: none;
+                                padding: 6px 12px;
+                                border: 1px solid #ccc;
+                                border-top: none;
+                            }
+                        </style>
+                        <meta charset="utf-8">
+                    </head>
+                    <body>
 
-		<div class="tab">
-			<button class="tablinks" onclick="openCity(event, 'פרק 1')" id="defaultOpen">פרק</button>
-			<button class="tablinks" onclick="openCity(event, 'פרק 2')">פרק 2</button>
-			<button class="tablinks" onclick="openCity(event, 'פרק 3')">פרק 3</button>
-		</div>
+                        <form  action="/appraiserSpace.html" id="seker"></form>
 
-		<div id="פרק 1" class="tabcontent">
-			<table text-align="right">
-				<tr>
-					<td>שם מוצר</td>
-					<td>מחיר</td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c1i1" form="seker"/></td>
-					<td><input type="number" name="c1i1value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c1i2" form="seker"/></td>
-					<td><input type="number" name="c1i2value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c1i3" form="seker"/></td>
-					<td><input type="number" name="c1i3value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c1i4" form="seker"/></td>
-					<td><input type="number" name="c1i4value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c1i5" form="seker"/></td>
-					<td><input type="number" name="c1i5value"  form="seker" /></td>
-				</tr>
-			</table>  
-		</div>
+                        <div class="tab">
+                            <button class="tablinks" onclick="openCity(event, 'פרק 1')" id="defaultOpen">פרק</button>
+                            <button class="tablinks" onclick="openCity(event, 'פרק 2')">פרק 2</button>
+                            <button class="tablinks" onclick="openCity(event, 'פרק 3')">פרק 3</button>
+                        </div>
 
-		<div id="פרק 2" class="tabcontent">
-			<table text-align="right">
-				<tr>
-					<td>שם מוצר</td>
-					<td>מחיר</td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c4i1" form="seker"/></td>
-					<td><input type="number" name="c4i1value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c4i2" form="seker"/></td>
-					<td><input type="number" name="c4i2value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c4i3" form="seker"/></td>
-					<td><input type="number" name="c4i3value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c4i4" form="seker"/></td>
-					<td><input type="number" name="c4i4value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c4i5" form="seker"/></td>
-					<td><input type="number" name="c4i5value"  form="seker" /></td>
-				</tr>
-			</table>  
-		</div>
+                        <div id="פרק 1" class="tabcontent"><select id="cli_id" name="cli_id" form="seker">
+                        <option value="1">1</option>
+                    </select><table text-align="right">
+                    <tr>
+                        <td>שם מוצר</td>
+                        <td>מחיר</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i1" form="seker"/></td>
+                        <td><input type="number" name="c1i1value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i2" form="seker"/></td>
+                        <td><input type="number" name="c1i2value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i3" form="seker"/></td>
+                        <td><input type="number" name="c1i3value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i4" form="seker"/></td>
+                        <td><input type="number" name="c1i4value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i5" form="seker"/></td>
+                        <td><input type="number" name="c1i5value"  form="seker" /></td>
+                    </tr>
+                </table>  
+            </div>
 
-		<div id="פרק 3" class="tabcontent">
-			<table text-align="right">
-				<tr>
-					<td>שם מוצר</td>
-					<td>מחיר</td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c3i1" form="seker"/></td>
-					<td><input type="number" name="c3i1value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c3i2" form="seker"/></td>
-					<td><input type="number" name="c3i2value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c3i3" form="seker"/></td>
-					<td><input type="number" name="c3i3value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c3i4" form="seker"/></td>
-					<td><input type="number" name="c3i4value"  form="seker" /></td>
-				</tr>
-				<tr>
-					<td><input type="text" name="c3i5" form="seker"/></td>
-					<td><input type="number" name="c3i5value"  form="seker" /></td>
-				</tr>
-			</table>  
-			<button type="button" class="add_field">Add field</button>
-			<button type="submit" form="seker">הגש טופס</button>
-		</div>
+            <div id="פרק 2" class="tabcontent">
+                <table text-align="right">
+                    <tr>
+                        <td>שם מוצר</td>
+                        <td>מחיר</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i1" form="seker"/></td>
+                        <td><input type="number" name="c2i1value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i2" form="seker"/></td>
+                        <td><input type="number" name="c2i2value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i3" form="seker"/></td>
+                        <td><input type="number" name="c2i3value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i4" form="seker"/></td>
+                        <td><input type="number" name="c2i4value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i5" form="seker"/></td>
+                        <td><input type="number" name="c4i5value"  form="seker" /></td>
+                    </tr>
+                </table>  
+            </div>
 
-		<script>
-			function openCity(evt, cityName) {
-			var i, tabcontent, tablinks;
-			tabcontent = document.getElementsByClassName("tabcontent");
-			for (i = 0; i < tabcontent.length; i++) {
-				tabcontent[i].style.display = "none";
-			}
-			tablinks = document.getElementsByClassName("tablinks");
-			for (i = 0; i < tablinks.length; i++) {
-				tablinks[i].className = tablinks[i].className.replace(" active", "");
-			}
-			document.getElementById(cityName).style.display = "block";
-				evt.currentTarget.className += " active";
-			}
+            <div id="פרק 3" class="tabcontent">
+                <table text-align="right">
+                    <tr>
+                        <td>שם מוצר</td>
+                        <td>מחיר</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i1" form="seker"/></td>
+                        <td><input type="number" name="c3i1value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i2" form="seker"/></td>
+                        <td><input type="number" name="c3i2value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i3" form="seker"/></td>
+                        <td><input type="number" name="c3i3value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i4" form="seker"/></td>
+                        <td><input type="number" name="c3i4value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i5" form="seker"/></td>
+                        <td><input type="number" name="c3i5value"  form="seker" /></td>
+                    </tr>
+                </table>  
+                <button type="button" class="add_field">Add field</button>
+                <button type="submit" form="seker">הגש טופס</button>
+            </div>
 
-			// Get the element with id="defaultOpen" and click on it
-			document.getElementById("defaultOpen").click();
+            <script>
+                function openCity(evt, cityName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(cityName).style.display = "block";
+                    evt.currentTarget.className += " active";
+                }
 
-			$(document).on('click', '.add_field', function() {
-			$('<input type="text" class="input" name="field[]" value="">').insertAfter('.input:last');})
-		</script>
-	
-	</body>
-</html> 
+                // Get the element with id="defaultOpen" and click on it
+                document.getElementById("defaultOpen").click();
 
+                        $(document).on('click', '.add_field', function() {
+                        $('<input type="text" class="input" name="field[]" value="">').insertAfter('.input:last');})
+                    </script>
+                
+                </body>
+            </html> 
+            
 
 SETDATE.HTML:
 <!DOCTYPE html>
@@ -1219,6 +1408,190 @@ WRITEMAIL.HTML:
 </html>
 
 
+SEKER.PY:
+def create_seker(client):
+    """
+        creates survey form
+    """
+    p_name = 'pages/sekerFill.html'
+    with open (p_name, 'w', encoding="utf-8") as current_page:
+        page = """
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <style>
+                            body {font-family: Arial;}
+
+                            /* Style the tab */
+                            .tab {
+                                overflow: hidden;
+                                border: 1px solid #ccc;
+                                background-color: #f1f1f1;
+                            }
+
+                            /* Style the buttons inside the tab */
+                            .tab button {
+                                background-color: inherit;
+                                float: left;
+                                border: none;
+                                outline: none;
+                                cursor: pointer;
+                                padding: 14px 16px;
+                                transition: 0.3s;
+                                font-size: 17px;
+                            }
+
+                            /* Change background color of buttons on hover */
+                            .tab button:hover {
+                                background-color: #ddd;
+                            }
+
+                            /* Create an active/current tablink class */
+                            .tab button.active {
+                                background-color: #ccc;
+                            }
+
+                            /* Style the tab content */
+                            .tabcontent {
+                                display: none;
+                                padding: 6px 12px;
+                                border: 1px solid #ccc;
+                                border-top: none;
+                            }
+                        </style>
+                        <meta charset="utf-8">
+                    </head>
+                    <body>
+
+                        <form  action="/appraiserSpace.html" id="seker"></form>
+
+                        <div class="tab">
+                            <button class="tablinks" onclick="openCity(event, 'פרק 1')" id="defaultOpen">פרק</button>
+                            <button class="tablinks" onclick="openCity(event, 'פרק 2')">פרק 2</button>
+                            <button class="tablinks" onclick="openCity(event, 'פרק 3')">פרק 3</button>
+                        </div>
+
+                        <div id="פרק 1" class="tabcontent">"""
+        page += f"""<select id="cli_id" name="cli_id" form="seker">
+                        <option value="{client}" selected="selected">{client}</option>
+                    </select>"""
+
+        page += """<table text-align="right">
+                    <tr>
+                        <td>שם מוצר</td>
+                        <td>מחיר</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i1" form="seker"/></td>
+                        <td><input type="number" name="c1i1value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i2" form="seker"/></td>
+                        <td><input type="number" name="c1i2value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i3" form="seker"/></td>
+                        <td><input type="number" name="c1i3value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i4" form="seker"/></td>
+                        <td><input type="number" name="c1i4value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c1i5" form="seker"/></td>
+                        <td><input type="number" name="c1i5value"  form="seker" /></td>
+                    </tr>
+                </table>  
+            </div>
+
+            <div id="פרק 2" class="tabcontent">
+                <table text-align="right">
+                    <tr>
+                        <td>שם מוצר</td>
+                        <td>מחיר</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i1" form="seker"/></td>
+                        <td><input type="number" name="c2i1value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i2" form="seker"/></td>
+                        <td><input type="number" name="c2i2value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i3" form="seker"/></td>
+                        <td><input type="number" name="c2i3value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i4" form="seker"/></td>
+                        <td><input type="number" name="c2i4value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c2i5" form="seker"/></td>
+                        <td><input type="number" name="c4i5value"  form="seker" /></td>
+                    </tr>
+                </table>  
+            </div>
+
+            <div id="פרק 3" class="tabcontent">
+                <table text-align="right">
+                    <tr>
+                        <td>שם מוצר</td>
+                        <td>מחיר</td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i1" form="seker"/></td>
+                        <td><input type="number" name="c3i1value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i2" form="seker"/></td>
+                        <td><input type="number" name="c3i2value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i3" form="seker"/></td>
+                        <td><input type="number" name="c3i3value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i4" form="seker"/></td>
+                        <td><input type="number" name="c3i4value"  form="seker" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="c3i5" form="seker"/></td>
+                        <td><input type="number" name="c3i5value"  form="seker" /></td>
+                    </tr>
+                </table>  
+                <button type="button" class="add_field">Add field</button>
+                <button type="submit" form="seker">הגש טופס</button>
+            </div>
+
+            <script>
+                function openCity(evt, cityName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(cityName).style.display = "block";
+                    evt.currentTarget.className += " active";
+                }
+
+                // Get the element with id="defaultOpen" and click on it
+                document.getElementById("defaultOpen").click();
+
+                        $(document).on('click', '.add_field', function() {
+                        $('<input type="text" class="input" name="field[]" value="">').insertAfter('.input:last');})
+                    </script>
+                
+                </body>
+            </html> 
+            """
+        current_page.write(page)
+
 SERVER.PY:
 import socket, threading, os
 import datetime
@@ -1226,6 +1599,7 @@ from ORM import *
 from usersClasses import * 
 from createPages import CreatePages
 from chat import *
+from seker import *
 
 IP_PORT = ('0.0.0.0', 80)
 clients = []
@@ -1234,6 +1608,9 @@ current_page = ''
 
 
 def file_content_type(file_name):
+    """
+        determine the content type of a file based on its extension and retrieve its content.
+    """
     path = ''
     content = ''
     if file_name == '/':
@@ -1257,6 +1634,9 @@ def file_content_type(file_name):
 
 
 def website_request(file_name,):
+    """
+        write the http website request, including retrieving the file content and constructing the HTTP response.
+    """
     file_content = file_content_type(file_name) 
     if 'Err' in file_content:
         return ''
@@ -1270,6 +1650,9 @@ def website_request(file_name,):
 
 
 def validate_user(params):
+    """
+        validate user credentials and return an appropriate user object based on the user type (appraiser or cli).
+    """
     user = []
     if type(params) == type([]):
         user.append('ap')
@@ -1280,20 +1663,23 @@ def validate_user(params):
         print(user[1])
     else:
         user.append('cli')
-        data = ORM.get_client_data(params)
+        data, exe_date= ORM.get_client_data(params)
         print(data)
         if data == 'ERR1':
             return 'ERR1'
-        add = Address(data[7], data[8], data[9])
-        if data[5] != None and data[6] != None:
-            exeTime = datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+        add = Address(data[5], data[6], data[7])
+        if date != None:
+            exeTime = datetime(exe_date[0].year, exe_date[0].month, exe_date[0].day, exe_date[1].hour, exe_date[1].minute)
         else:
             exeTime = None
-        user.append(Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10]))
+        user.append(Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[-1]))
     return user
 
 
 def extract_date(data):
+    """
+        extract the web, date, and time information from the request.
+    """
     extract = data.split('?')
     web = extract[0]
     splitDateTime = extract[-1].split('=')
@@ -1304,6 +1690,9 @@ def extract_date(data):
     return web, ymd, hm
 
 def get_user_from_cookie(cookie):
+    """
+        extract user information from a cookie.
+    """
     print(cookie)
     user = ''
     if cookie == None:
@@ -1323,6 +1712,9 @@ def get_user_from_cookie(cookie):
     return user
 
 def extract_login_answer(data):
+    """
+        extract username and password from the login request.
+    """
     web = data.split('?')[0]
     fields = data.split('?')[1].split('=')
     username = fields[1].split('&')[0]
@@ -1330,22 +1722,36 @@ def extract_login_answer(data):
     return [username, password], web
  
 def extractSekerData(formAnswers):
+    """
+        extract Seker ID and item prices from form submission.
+    """
     web, dataOnly = formAnswers.split('?')[0], formAnswers.split('?')[1]
     dataOnly = dataOnly.split('&')
-    print(web, dataOnly)
     sekerId = dataOnly[0].split('=')[1]
-    itemsNprices = [x.split('=')[1] for x in dataOnly[1:]]
+    c1ItemPrices = []
+    c2ItemPrices = []
+    c3ItemPrices = []
+    for x in dataOnly[1:]:
+        if 'c1' in x:
+            c1ItemPrices.append(x.split('=')[1])
+        elif 'c2' in x:
+            c2ItemPrices.append(x.split('=')[1])
+        elif 'c3' in x:
+            c3ItemPrices.append(x.split('=')[1])
+    itemsNprices = [c1ItemPrices, c2ItemPrices, c3ItemPrices]
     return web, sekerId, itemsNprices
 
+
 def build_answer(fields, cookie):
-    print(cookie)
+    """
+        build the appropriate HTTP response.
+    """
     ans = ''
     web = None
     if fields[0] == 'GET':
         if '?' in fields[1]:
             if 'uname' in fields[1] or 'number' in fields[1]:
                 details, web = extract_login_answer(fields[1])
-                print(web)
                 if '05' in details[0]:
                     details = details[0] + '-' + details[1]
                 user = validate_user(details)
@@ -1360,45 +1766,49 @@ def build_answer(fields, cookie):
                 web, dateSelected, timeSelected = extract_date(fields[1])
                 ORM.updateCliSekerDate(dateSelected, timeSelected, cookie[-1].split('=')[-1])
                 fields = ['', web]
-            elif 'Seker' in fields[1]:
+            elif 'sekerFill' in fields[1]:
+                cli_id = fields[1][1:].split('?')[1].split('=')[1]
+                create_seker(cli_id)
+                fields = ['', '/sekerFill.html']
+            elif 'cli_id' in fields[1]:
                 web, sekerId, sekerData = extractSekerData(fields[1])
                 ORM.updateSeker(sekerId, sekerData)
                 fields = ['', web]
             elif 'msg' in fields[1]:
-                print(fields[1])
                 reciever, msg = fields[1].split('?')[1].split('=')
                 reciever = [reciever.split('qq')[0], reciever.split('qq')[1]]
-                print(reciever, msg)
                 res = update_send_msg(reciever, msg, cookie)
                 web = fields[1].split('?')[0]
-                print(web)
                 fields = ['', web]
-                print(web)
             elif 'chat' in fields[1]:
                 send_to = fields[1].split("?")[1].split("=")[1]
-                print(send_to)
                 user = get_user_from_cookie(cookie)
-                print(user, type(user))
                 web = CreatePages.go_chat(user, send_to)
                 fields = ['', web]
-                print(web)
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
     return ans
 
 
 def handle_client(c_sock, addres, id):
+    """
+        handle a client connection, receive and process the client's request, and send back the response.
+    """
     i = 0
     data = c_sock.recv(1024).decode()
     print("CURRENT REQUEST:\n",data)
     cookie = data.split('\r\n')[-3].split()
     fields = data.split('\r\n')[0].split()
     response = build_answer(fields, cookie) 
+    print(response)
     if response is not None:
         c_sock.send(response.encode())
     c_sock.close()
 
 def main():
+    """
+        main loop
+    """
     s = socket.socket()
 
     s.bind(IP_PORT)
@@ -1451,47 +1861,85 @@ USERSCLASSES.PY:
 class Appraiser:
 
     def __init__(self, id, name, skarim):
+        """
+            Constructor that takes parameters id, name, and skarim and initializes the Appraiser object
+        """
         self.id = id
         self.name = name
         self.skarim = skarim
 
     def GetID(self):
+        """
+            Returns the ID of the appraiser
+        """
         return self.id
     
     def GetName(self):
+        """
+            Returns the name of the appraiser
+        """
         return self.name
     
     def GetSkarim(self):
+        """
+            Returns the surveys of the appraiser
+
+        """
         return self.skarim
 
 
 class Address:
     def __init__(self, city, street, aptnum):
+        """
+            Constructor that takes parameters city, street, and aptnum and initializes the Address object
+        """
         self.city = city
         self.street = street
         self.aptnum = aptnum
 
     def GetCity(self):
+        """
+            Returns the city name
+        """
         return self.city
     
     def GetStreet(self):
+        """
+            Returns the street name
+        """
         return self.street
     
     def GetAptnum(self):
+        """
+            Returns the apartment number
+        """
         return self.aptnum
     
     def SetCity(self, city):
+        """
+            Sets the city name
+        """
         self.city = city
     
     def SetStreet(self, street):
+        """
+            Sets the street name
+        """
         self.street = street
     
     def SetAptnum(self, aptnum):
+        """
+            Sets the apartment number
+        """
         self.aptnum = aptnum
        
 class Client:
 
     def __init__(self, id, fname, lname, sekerId, phone, address, exeTime, appraiserId):
+        """
+            Constructor that takes parameters id, fname, lname, sekerId, phone, address, exeTime, and 
+            appraiserId and initializes the Client object
+        """
         self.id = id
         self.fname = fname
         self.lname = lname
@@ -1502,24 +1950,45 @@ class Client:
         self.appraiserId = appraiserId
     
     def GetID(self):
+        """
+            Returns the ID of the client
+        """
         return self.id
     
     def GetFirstName(self):
+        """
+            Returns the first name of the client
+        """
         return self.fname
 
     def GetLastName(self):
+        """
+            Returns the last name of the client
+        """
         return self.lname
     
     def GetSekerId(self):
+        """
+            Returns the seker ID of the client
+        """
         return self.sekerId
     
     def GetExeTime(self):
+        """
+            Returns the execution time of the client
+        """
         return self.exeTime
 
     def SetExeTime(self, exeTime):
+        """
+            Sets the execution time of the client
+        """
         self.exeTime = exeTime
 
     def __str__(self):
+        """
+            Returns a string representation of the client object
+        """
         return f"""name: {self.fname} {self.lname}\n
                     index: {self.id}
                     Exetime: {self.exeTime}"""

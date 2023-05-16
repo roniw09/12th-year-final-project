@@ -1,4 +1,7 @@
 def create_seker(client):
+    """
+        creates survey form
+    """
     p_name = 'pages/sekerFill.html'
     with open (p_name, 'w', encoding="utf-8") as current_page:
         page = """
@@ -60,7 +63,7 @@ def create_seker(client):
 
                         <div id="פרק 1" class="tabcontent">"""
         page += f"""<select id="cli_id" name="cli_id" form="seker">
-                        <option value="{client}">{client}</option>
+                        <option value="{client}" selected="selected">{client}</option>
                     </select>"""
 
         page += """<table text-align="right">

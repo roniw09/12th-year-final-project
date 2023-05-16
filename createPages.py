@@ -1,4 +1,4 @@
-import webbrowser, chat
+import chat
 from usersClasses import *
 
 HEADER = "<!DOCTYPE html>"
@@ -30,6 +30,9 @@ class CreatePages:
             current_page.truncate(0)
 
     def validated_user_home(type):
+        """
+            creates homepage
+        """
         p_name = "pages/validatedUserHome.html"
         with open(p_name, "w", encoding="utf-8") as current_page:
             nav = ''
@@ -78,6 +81,9 @@ class CreatePages:
 
 
     def validated_appraiser_page(user):
+        """
+            creates the appraiser page after validation
+        """
         p_name = 'pages/appraiserSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
@@ -144,7 +150,11 @@ class CreatePages:
             </html>"""
             current_page.write(page)
 
+
     def create_client_main(client):
+        """
+            creates the clients main according to execute hour
+        """
         print(client)
         page = f"""<div class="main">
                             <h1> שלום, {client.GetFirstName()} {client.GetLastName()}</h1>"""
@@ -164,7 +174,11 @@ class CreatePages:
             </div>"""
         return page
     
+
     def validated_client_page(client):
+        """
+            creates the client page after validation
+        """
         p_name = 'pages/clientSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
@@ -205,6 +219,9 @@ class CreatePages:
             current_page.write(page)
 
     def go_chat(user, send_to):
+        """
+            creates chat
+        """
         p_name = 'pages/chat.html'
 
         with open(p_name, 'w', encoding="utf-8") as current_page:
