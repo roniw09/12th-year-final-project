@@ -6,14 +6,6 @@ PATH = rf'{pathlib.Path().absolute()}'
 
 class ORM:
 
-    def count_users():    
-        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' + PATH + r'\DemiDB.mdb')
-        cursor = conn.cursor()
-        cursor.execute('select count(*) from users')
-        
-        for row in cursor.fetchall():
-            print (row)
-
     def updateSeker(ClientId, sekerData):
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
