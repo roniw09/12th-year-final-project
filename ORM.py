@@ -19,24 +19,17 @@ class ORM:
         for n in range(len(sekerData)):
             for x in range(0, len(sekerData[n]), 2):
                 if sekerData[n][x] != '':
-                    to_exe = f"""Insert into SekerValues ({cols}) Values ({ClientId}, {n}, '{sekerData[n][x]}', '{sekerData[n][x + 1]}')"""
-                    print(to_exe)
+                    to_exe = f"""Insert into SekerValues ({cols}) Values ({ClientId}, {n + 1}, '{sekerData[n][x]}', '{sekerData[n][x + 1]}')"""
                     cursor.execute(to_exe)
-        print(qList)
+                    cursor.commit()
     
 
-    def enter_new_agent(params):
-        params = [x.split('=')[1] for x in params]
-        username = params[0]
-        psw = hashlib.sha256(params[1].encode()).hexdigest()
-        cellphone = params[2] + '-' + params[3]
+    def enter_new_agent(username, psw, cellphone):
         u_type = "appraiser"
-        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+        conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' + PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
-        cursor.execute(f"""Insert Into Agents (Username, Password, Phone, Type) Values ('{username}', '{psw})', '{cellphone}', '{u_type}')""")
+        cursor.execute(f"""Insert Into Agents (Username, Password, Phone, Type) Values ('{username}', '{psw}', '{cellphone}', '{u_type}')""")
         conn.commit()
-
-        return [username, params[1]]
 
     def updateCliSekerDate(day, hm, cliID):
         """
@@ -63,16 +56,18 @@ class ORM:
             print("RAW DATA", rawData)
             return 'ERR1'
         data = [x for x in rawData]
-        print(data)
+        print(data, today)
         
-        cursor.execute(f"""select Name, City, Street, CellPhone, ExeHour from Seker where AgentID = {data[0]} and Format(ExeDay, 'dd/mm/yyyy') = '{today}'""")
+        cursor.execute(f"""select ClientID, Name, City, Street, ExeHour from Seker where AgentID = {data[0]} and Format(ExeDay, 'dd/mm/yyyy') = '{today}'""")
         rawSekerData = cursor.fetchall()
 
         if rawSekerData != []:
             sekerData = []
             for t in rawSekerData:
                 sekerData.append([x for x in t])
+
             data.append(sekerData)
+            print(sekerData)
         return data
     
     def get_app_by_id(id):
@@ -178,11 +173,13 @@ class ORM:
         """
             get messages from db
         """
-        t = ''
+        o_type = ''
         if u_type == Appraiser:
             u_type = 'Agent'
+            o_type = 'client'
         else:
             u_type = 'Client'
+            o_type = 'agent'
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
         cursor.execute(f"""SELECT * from Msgs where {u_type}Id = {id}""")

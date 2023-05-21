@@ -36,7 +36,7 @@ def file_content_type(file_name):
     return [f_type, content] 
 
 
-def website_request(file_name,):
+def website_request(file_name, cookie):
     """
         write the http website request, including retrieving the file content and constructing the HTTP response.
     """
@@ -46,9 +46,9 @@ def website_request(file_name,):
     length = str(len(str(file_content[1])))
     answer = 'HTTP/1.1 200 OK' + LINE 
     answer += 'Content-Length: ' + length + LINE
-    answer  += f'Content-Type: {file_content[0]}; charset=utf-8' + LINE 
+    answer  += f'Content-Type: {file_content[0]}; charset=utf-8' + LINE
     answer += LINE
-    answer += file_content[1]  
+    answer += file_content[1]
     return answer
 
 
@@ -58,11 +58,12 @@ def validate_user(params):
     """
     user = []
     if type(params) == type([]):
-        print("in")
         user.append('ap')
         data = ORM.get_employee_data(params[0], params[1])
         if data == 'ERR1':
             return 'ERR1'
+        if type(data[-1]) != type([]):
+            data[-1] = None 
         user.append(Appraiser(data[0], data[1], data[-1]))
     else:
         user.append('cli')
@@ -94,7 +95,6 @@ def get_user_from_cookie(cookie):
     """
         extract user information from a cookie.
     """
-    print(cookie)
     user = ''
     if cookie == None:
         return 'Err'
@@ -154,13 +154,12 @@ def handle_chat(fields, cookie):
         send_to = ORM.get_client_app(user)
     if "qq" in fields[1]: 
         reciever, msg = fields[1].split('?')[1].split('=')
-        print(reciever)
         send_to = [reciever.split('qq')[0], reciever.split('qq')[1]]
         if "%" in msg:
             msg = urllib.parse.unquote(msg)
         update_send_msg(send_to, msg, cookie)
         send_to = send_to[1]
-    else:
+    if "?" in fields[1]:
         send_to = fields[1].split("?")[1].split("=")[1]
     web = CreatePages.go_chat(user, send_to)
     return ['', web]
@@ -168,7 +167,11 @@ def handle_chat(fields, cookie):
 
 def new_agent(fields):
     detail = fields[1].split('?')[1].split('&')
-    params = ORM.enter_new_agent(detail)
+    params = [x.split('=')[1] for x in detail]
+    username = params[0]
+    psw = hashlib.sha256(params[1].encode()).hexdigest()
+    cellphone = params[2] + '-' + params[3]
+    ORM.enter_new_agent(username, psw, cellphone)
     return params
 
 
@@ -198,7 +201,7 @@ def build_answer(fields, cookie):
                 fields = ['', web]
             elif 'sekerFill' in fields[1]:
                 cli_id = fields[1][1:].split('?')[1].split('=')[1]
-                create_seker(cli_id)
+                create_seker(cli_id, cookie)
                 fields = ['', '/sekerFill.html']
             elif 'cli_id' in fields[1]:
                 web, sekerId, sekerData = extractSekerData(fields[1])
@@ -207,14 +210,11 @@ def build_answer(fields, cookie):
             elif 'new' in fields[1]:
                 web = fields[1].split("?")[0]
                 params = new_agent(fields)
-                user = validate_user(params)
-                CreatePages.validated_appraiser_page(user)
-                print(web)
                 fields = ['', web]                
         if 'chat' in fields[1]:
                 fields = handle_chat(fields, cookie)
         if '/' in fields[1] and '?' not in fields[1]:
-            ans = website_request(fields[1])
+            ans = website_request(fields[1], cookie)
     return ans
 
 
@@ -227,7 +227,8 @@ def handle_client(c_sock, address, id):
     print("CURRENT REQUEST:\n",data)
     cookie = data.split('\r\n')[-3].split()
     fields = data.split('\r\n')[0].split()
-    response = build_answer(fields, cookie) 
+    response = build_answer(fields, cookie)
+    print(response) 
     if response is not None:
         c_sock.send(response.encode())
     c_sock.close()
@@ -243,7 +244,6 @@ def main():
     i = 0
     while i < 100:
         c, add = s.accept()
-        print("connected")
         t = threading.Thread(target=handle_client, args=(c,add, i))
         t.start()
         clients.append(t)

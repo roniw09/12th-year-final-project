@@ -1,4 +1,4 @@
-def create_seker(client):
+def create_seker(client, cookie):
     """
         creates survey form
     """
@@ -56,9 +56,9 @@ def create_seker(client):
                         <form  action="/appraiserSpace.html" id="seker"></form>
 
                         <div class="tab">
-                            <button class="tablinks" onclick="openCity(event, 'פרק 1')" id="defaultOpen">פרק</button>
-                            <button class="tablinks" onclick="openCity(event, 'פרק 2')">פרק 2</button>
-                            <button class="tablinks" onclick="openCity(event, 'פרק 3')">פרק 3</button>
+                            <button class="tablinks" onclick="openChapter(event, 'פרק 1')" id="defaultOpen">פרק</button>
+                            <button class="tablinks" onclick="openChapter(event, 'פרק 2')">פרק 2</button>
+                            <button class="tablinks" onclick="openChapter(event, 'פרק 3')">פרק 3</button>
                         </div>
 
                         <div id="פרק 1" class="tabcontent">"""
@@ -150,12 +150,11 @@ def create_seker(client):
                         <td><input type="number" name="c3i5value"  form="seker" /></td>
                     </tr>
                 </table>  
-                <button type="button" class="add_field">Add field</button>
                 <button type="submit" form="seker">הגש טופס</button>
             </div>
 
             <script>
-                function openCity(evt, cityName) {
+                function openChapter(evt, chapterName) {
                 var i, tabcontent, tablinks;
                 tabcontent = document.getElementsByClassName("tabcontent");
                 for (i = 0; i < tabcontent.length; i++) {
@@ -165,15 +164,14 @@ def create_seker(client):
                 for (i = 0; i < tablinks.length; i++) {
                     tablinks[i].className = tablinks[i].className.replace(" active", "");
                 }
-                document.getElementById(cityName).style.display = "block";
+                document.getElementById(chapterName).style.display = "block";
                     evt.currentTarget.className += " active";
                 }
 
-                // Get the element with id="defaultOpen" and click on it
-               
-                    let x = document.cookie
-                    console.log(x)
-                    </script>
+            
+                let x = document.cookie
+                console.log(x)
+                </script>
                 
                 </body>
             </html> 

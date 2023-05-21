@@ -74,7 +74,8 @@ class CreatePages:
                             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
                         }
                     }"""
-            page += f"""deleteAllCookies()
+            page += f"""
+                    deleteAllCookies()
                 </html>"""
             current_page.write(page)
 
@@ -84,7 +85,6 @@ class CreatePages:
         """
             creates the appraiser page after validation
         """
-        print(user)
         p_name = 'pages/appraiserSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>
@@ -107,8 +107,7 @@ class CreatePages:
                     <div class="main">
                         <h1>שלום, {user.GetName()}</h1>"""
             if user.GetSkarim() == None:
-                page += """<h2> אין לך כרגע כלום! <h2>
-                    <a href="chat.html">chat</a>"""
+                page += """<h2> אין לך כרגע כלום! <h2>"""
             else:
                 page += """<table border="2" style="width:50%; align-content: center; text-align: center">
                         <tr>
@@ -119,14 +118,15 @@ class CreatePages:
                             <th>צ'אט</th>
                         </tr>"""
                 for x in user.GetSkarim():
+                    print(x)
                     add = f"{x[2]} {x[3]}, {x[1]}"
                     page += f"""
                     <tr>
                         <th>{x[0]}</th>
                         <th>{str(x[-1].hour).zfill(2)}:{str(x[-1].minute).zfill(2)}</th>
                         <th>{add}</th>
-                        <th> <input type="button" onclick="window.location.href='sekerFill.html?id={user.GetID()}';" value="הכנס סקר" /></th>
-                        <th><a href="chat.html?id={user.GetID()}">chat</a></th>
+                        <th> <input type="button" onclick="window.location.href='sekerFill.html?id={x[0]}';" value="הכנס סקר" /></th>
+                        <th><a href="chat.html?id={x[0]}">chat</a></th>
                     <tr>"""
 
             page += """</div>

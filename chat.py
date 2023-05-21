@@ -135,4 +135,6 @@ def insert_msg(user):
     """
     id = user.GetID()
     n, prev = ORM.get_user_msgs(id, type(user))
+    if n == None or prev == None:
+        return 'no chat'
     return n, prev

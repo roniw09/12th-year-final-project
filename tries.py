@@ -3,10 +3,10 @@ from datetime import *
 import hashlib
 import urllib.parse
 
-encoded_text = "%D7%92%D7%9C%D7%94%D7%92%D7"
-decoded_text = urllib.parse.unquote(encoded_text)
+# encoded_text = "%D7%92%D7%9C%D7%94%D7%92%D7"
+# decoded_text = urllib.parse.unquote(encoded_text)
 
-print(decoded_text)
+# print(decoded_text)
 
 # PATH = rf'{pathlib.Path().absolute()}'
 
@@ -25,7 +25,7 @@ print(decoded_text)
 
 # # print(get_client_data('054-9918135'))
 
-# def convert_to_sha2(psw):
-#     return hashlib.sha256(psw.encode()).hexdigest()
+def convert_to_sha2(psw):
+    return hashlib.sha256(psw.encode()).hexdigest()
 
-# print(convert_to_sha2('1234'))
+print(convert_to_sha2('Ra1234'))
