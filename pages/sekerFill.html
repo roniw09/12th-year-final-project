@@ -56,7 +56,7 @@
                         </div>
 
                         <div id="פרק 1" class="tabcontent"><select id="cli_id" name="cli_id" form="seker">
-                        <option value="1">1</option>
+                        <option value="1" selected="selected">1</option>
                     </select><table text-align="right">
                     <tr>
                         <td>שם מוצר</td>
@@ -161,10 +161,9 @@
                 }
 
                 // Get the element with id="defaultOpen" and click on it
-                document.getElementById("defaultOpen").click();
-
-                        $(document).on('click', '.add_field', function() {
-                        $('<input type="text" class="input" name="field[]" value="">').insertAfter('.input:last');})
+               
+                    let x = document.cookie
+                    console.log(x)
                     </script>
                 
                 </body>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>יובי</title>
+    </head>
+    <style>
+        body {
+            background-color: #b2b2b2;
+            height: 500px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+        }
+        .nav a {color:black;text-align: right; font-size: 20px; padding: 10px 10px;font-family: 'assistant';}
+        .main{position: relative; top: 10px;text-align: center;font-size: 25px; font-family: assistant;}
+        .main h1{position: relative; top: 10px; text-align:center;}
+    </style>
+    <meta charset="utf-8">
+    <body>
+
+        <div class="nav">
+            <a href="home.html">דף הבית</a>
+        </div>
+        <div class="main">
+            <h1>הכנס פרטים</h1>
+            <form action="appraiserSpace.html">
+                <label for="newname"><input type="text" placeholder="שם משתמש" name="newname" required> <b>שם משתמש</b></label>
+                <br>
+                <label for="newpsw"><input type="password" placeholder="סיסמא" name="newpsw" required> <b>סיסמא</b></label>
+                <br>
+                <select id="area_code" name="nac">
+                    <option value="050">050</option>
+                    <option value="051">051</option>
+                    <option value="052">052</option>
+                    <option value="053">053</option>
+                    <option value="054">054</option>
+                    <option value="055">055</option>
+                    <option value="056">056</option>
+                    <option value="057">057</option>
+                    <option value="058">058</option>
+                    <option value="059">059</option>
+                </select>
+                <label for="agcell"> <input type="text" placeholder="מספר טלפון" name="agcell" required> <b>מספר טלפון</b> </label>
+                <br><br>
+                <button type="submit">התחבר</button>
+            </form>
+        </div>
+    </body>
+</html>

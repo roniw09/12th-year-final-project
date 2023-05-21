@@ -7,10 +7,12 @@ def build_chat(user, send_to):
         builds chat interface
     """
     u_type = type(user)
-    if u_type == 'Client':
+    print("!!!!!", u_type)
+    if u_type == Client:
         u_type = 'client'
     else: u_type = 'agent'
     c_name, prev = insert_msg(user)
+    print(prev)
     page = """<!DOCTYPE html>
     <html>
     <head>
@@ -83,15 +85,18 @@ def build_chat(user, send_to):
         """
     rec_type = ''
     print(type(user))
-    if type(user) == Appraiser:
+    if type(user) == Appraiser: 
         rec_type = 'cli'
     else:
         rec_type = 'agent'
-    print(type(user), rec_type)
+    print("TYPES", "USER", type(user), "RECIEVER", rec_type, send_to)
     page += f"""<select name="{rec_type}">"""
+
+    print("SEND TO", send_to, type(send_to))
         
     page += f"""
                 <input type="text" name="{rec_type}qq{send_to}qqmsgcon" id="chat-input" placeholder="Type your message...">"""
+    
     page += """
         <button type="submit" onclick="sendMessage()">Send</button>
         </form>
@@ -121,6 +126,7 @@ def update_send_msg(who_to, msg, cookie):
         who_sent = 'agent'
     else:
         who_sent = 'client'
+    print("PRINT", who_to[1], cookie[1].split('=')[1], msg, who_sent)
     ORM.save_msg(who_to[1], cookie[1].split('=')[1], msg, who_sent)
 
 def insert_msg(user):
@@ -128,5 +134,5 @@ def insert_msg(user):
         uploads new messages into the interface
     """
     id = user.GetID()
-    n, prev = ORM.get_user_msgs(id, type(user), )
+    n, prev = ORM.get_user_msgs(id, type(user))
     return n, prev

@@ -170,10 +170,9 @@ def create_seker(client):
                 }
 
                 // Get the element with id="defaultOpen" and click on it
-                document.getElementById("defaultOpen").click();
-
-                        $(document).on('click', '.add_field', function() {
-                        $('<input type="text" class="input" name="field[]" value="">').insertAfter('.input:last');})
+               
+                    let x = document.cookie
+                    console.log(x)
                     </script>
                 
                 </body>

@@ -1,25 +1,31 @@
 import pyodbc, pathlib
 from datetime import *
 import hashlib
+import urllib.parse
 
-PATH = rf'{pathlib.Path().absolute()}'
+encoded_text = "%D7%92%D7%9C%D7%94%D7%92%D7"
+decoded_text = urllib.parse.unquote(encoded_text)
 
-def get_client_data(phone):
-    conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
-    cursor = conn.cursor()
-    cursor.execute(f"""select * from Clients where Phone = '{phone}'""")
+print(decoded_text)
 
-    data = cursor.fetchall()
-    if data != []:
-        res = []
-        for x in data[0]:
-            res.append(x)
-        return res
-    return 'ERR1'
+# PATH = rf'{pathlib.Path().absolute()}'
 
-# print(get_client_data('054-9918135'))
+# def get_client_data(phone):
+#     conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
+#     cursor = conn.cursor()
+#     cursor.execute(f"""select * from Clients where Phone = '{phone}'""")
 
-def convert_to_sha2(psw):
-    return hashlib.sha256(psw.encode()).hexdigest()
+#     data = cursor.fetchall()
+#     if data != []:
+#         res = []
+#         for x in data[0]:
+#             res.append(x)
+#         return res
+#     return 'ERR1'
 
-print(convert_to_sha2('1234'))
+# # print(get_client_data('054-9918135'))
+
+# def convert_to_sha2(psw):
+#     return hashlib.sha256(psw.encode()).hexdigest()
+
+# print(convert_to_sha2('1234'))

@@ -84,6 +84,7 @@ class CreatePages:
         """
             creates the appraiser page after validation
         """
+        print(user)
         p_name = 'pages/appraiserSpace.html'
         with open (p_name, 'w', encoding="utf-8") as current_page:
             page = """<!DOCTYPE html>

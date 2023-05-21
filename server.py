@@ -1,4 +1,4 @@
-import socket, threading, os
+import socket, threading, os, urllib.parse
 import datetime
 from ORM import *
 from usersClasses import * 
@@ -30,11 +30,9 @@ def file_content_type(file_name):
         path = f'assests{file_name}'
     if path == '':
         return 'Err'
-    print(path)
     c_file = open(path, 'r', encoding="utf-8")
     content += '\n'.join(x for x in c_file.readlines())
     c_file.close()
-    print(content)
     return [f_type, content] 
 
 
@@ -60,16 +58,15 @@ def validate_user(params):
     """
     user = []
     if type(params) == type([]):
+        print("in")
         user.append('ap')
         data = ORM.get_employee_data(params[0], params[1])
         if data == 'ERR1':
             return 'ERR1'
         user.append(Appraiser(data[0], data[1], data[-1]))
-        print(user[1])
     else:
         user.append('cli')
         data, exe_date= ORM.get_client_data(params)
-        print(data)
         if data == 'ERR1':
             return 'ERR1'
         add = Address(data[5], data[6], data[7])
@@ -91,7 +88,6 @@ def extract_date(data):
     ymd = splitDateTime[1].split('&')[0]
     hm = splitDateTime[-1].split('%3A')
     hm = f'{hm[0].zfill(2)}:{hm[-1].zfill(2)}'
-    print(ymd, hm)
     return web, ymd, hm
 
 def get_user_from_cookie(cookie):
@@ -107,13 +103,15 @@ def get_user_from_cookie(cookie):
         data = ORM.get_app_by_id(c_id)
         user = Appraiser(data[0], data[1], data[-1])
     else:
-        data = ORM.get_cli_by_id(c_id)
-        add = Address(data[7], data[8], data[9])
-        if data[5] != None and data[6] != None:
-            exeTime = datetime.datetime(data[5].year, data[5].month, data[5].day, data[6].hour, data[6].minute)
+        data, exe_date = ORM.get_cli_by_id(c_id)
+        if data == 'ERR1':
+            return 'ERR1'
+        add = Address(data[5], data[6], data[7])
+        if exe_date != None:
+            exeTime = datetime(exe_date[0].year, exe_date[0].month, exe_date[0].day, exe_date[1].hour, exe_date[1].minute)
         else:
             exeTime = None
-        user = Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[10])
+        user = Client(data[0], data[1], data[2], data[3], data[4], add, exeTime, data[-1])
     return user
 
 def extract_login_answer(data):
@@ -137,14 +135,41 @@ def extractSekerData(formAnswers):
     c2ItemPrices = []
     c3ItemPrices = []
     for x in dataOnly[1:]:
-        if 'c1' in x:
-            c1ItemPrices.append(x.split('=')[1])
-        elif 'c2' in x:
-            c2ItemPrices.append(x.split('=')[1])
-        elif 'c3' in x:
-            c3ItemPrices.append(x.split('=')[1])
+        x = x.split("=")
+        if "%" in x[1]:
+            x[1] = urllib.parse.unquote(x[1])[::-1]
+        if 'c1' in x[0]:
+            c1ItemPrices.append(x[1])
+        elif 'c2' in x[0]:
+            c2ItemPrices.append(x[1])
+        elif 'c3' in x[0]:
+            c3ItemPrices.append(x[1])
     itemsNprices = [c1ItemPrices, c2ItemPrices, c3ItemPrices]
     return web, sekerId, itemsNprices
+
+def handle_chat(fields, cookie):
+    user = get_user_from_cookie(cookie)
+    send_to = ""
+    if type(user) == Client:
+        send_to = ORM.get_client_app(user)
+    if "qq" in fields[1]: 
+        reciever, msg = fields[1].split('?')[1].split('=')
+        print(reciever)
+        send_to = [reciever.split('qq')[0], reciever.split('qq')[1]]
+        if "%" in msg:
+            msg = urllib.parse.unquote(msg)
+        update_send_msg(send_to, msg, cookie)
+        send_to = send_to[1]
+    else:
+        send_to = fields[1].split("?")[1].split("=")[1]
+    web = CreatePages.go_chat(user, send_to)
+    return ['', web]
+
+
+def new_agent(fields):
+    detail = fields[1].split('?')[1].split('&')
+    params = ORM.enter_new_agent(detail)
+    return params
 
 
 def build_answer(fields, cookie):
@@ -179,23 +204,21 @@ def build_answer(fields, cookie):
                 web, sekerId, sekerData = extractSekerData(fields[1])
                 ORM.updateSeker(sekerId, sekerData)
                 fields = ['', web]
-            elif 'msg' in fields[1]:
-                reciever, msg = fields[1].split('?')[1].split('=')
-                reciever = [reciever.split('qq')[0], reciever.split('qq')[1]]
-                res = update_send_msg(reciever, msg, cookie)
-                web = fields[1].split('?')[0]
-                fields = ['', web]
-            elif 'chat' in fields[1]:
-                send_to = fields[1].split("?")[1].split("=")[1]
-                user = get_user_from_cookie(cookie)
-                web = CreatePages.go_chat(user, send_to)
-                fields = ['', web]
+            elif 'new' in fields[1]:
+                web = fields[1].split("?")[0]
+                params = new_agent(fields)
+                user = validate_user(params)
+                CreatePages.validated_appraiser_page(user)
+                print(web)
+                fields = ['', web]                
+        if 'chat' in fields[1]:
+                fields = handle_chat(fields, cookie)
         if '/' in fields[1] and '?' not in fields[1]:
             ans = website_request(fields[1])
     return ans
 
 
-def handle_client(c_sock, addres, id):
+def handle_client(c_sock, address, id):
     """
         handle a client connection, receive and process the client's request, and send back the response.
     """
@@ -205,7 +228,6 @@ def handle_client(c_sock, addres, id):
     cookie = data.split('\r\n')[-3].split()
     fields = data.split('\r\n')[0].split()
     response = build_answer(fields, cookie) 
-    print(response)
     if response is not None:
         c_sock.send(response.encode())
     c_sock.close()
