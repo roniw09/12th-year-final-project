@@ -1,4 +1,4 @@
-import socket, threading, os, urllib.parse
+import socket, threading, os, urllib.parse, ssl
 import datetime
 from ORM import *
 from usersClasses import * 
@@ -6,10 +6,13 @@ from createPages import CreatePages
 from chat import *
 from seker import *
 
-IP_PORT = ('0.0.0.0', 80)
+IP_PORT = ('0.0.0.0', 443)
 clients = []
 LINE = r'\r\n'
 current_page = ''
+C_PATH  = r"C:\Users\weiss4\Desktop\Roni\Cyber\12th-year-final-project\certificate\certificate.pem"
+K_PATH  = r"C:\Users\weiss4\Desktop\Roni\Cyber\12th-year-final-project\certificate\private.key"
+
 
 
 def file_content_type(file_name):
@@ -198,14 +201,14 @@ def build_answer(fields, cookie):
             elif 'selected' in fields[1]:
                 web, dateSelected, timeSelected = extract_date(fields[1])
                 ORM.updateCliSekerDate(dateSelected, timeSelected, cookie[-1].split('=')[-1])
-                fields = ['', web]
+                fields = ['' ,'/appraiserSpace.html']
             elif 'sekerFill' in fields[1]:
                 cli_id = fields[1][1:].split('?')[1].split('=')[1]
                 create_seker(cli_id, cookie)
                 fields = ['', '/sekerFill.html']
             elif 'cli_id' in fields[1]:
                 web, sekerId, sekerData = extractSekerData(fields[1])
-                ORM.updateSeker(sekerId, sekerData)
+                status = ORM.updateSeker(sekerId, sekerData)
                 fields = ['', web]
             elif 'new' in fields[1]:
                 web = fields[1].split("?")[0]
@@ -237,19 +240,22 @@ def main():
     """
         main loop
     """
-    s = socket.socket()
+    server = socket.socket()
+    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_context.load_cert_chain(certfile=C_PATH, keyfile=K_PATH)
+    sserver = ssl_context.wrap_socket(server, server_side=True)
 
-    s.bind(IP_PORT)
-    s.listen(100)
+    sserver.bind(IP_PORT)
+    sserver.listen(100)
     i = 0
     while i < 100:
-        c, add = s.accept()
+        c, add = sserver.accept()
         t = threading.Thread(target=handle_client, args=(c,add, i))
         t.start()
         clients.append(t)
         i += 1
 
-    s.close()
+    sserver.close()
     pass
 
 

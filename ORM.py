@@ -22,6 +22,7 @@ class ORM:
                     to_exe = f"""Insert into SekerValues ({cols}) Values ({ClientId}, {n + 1}, '{sekerData[n][x]}', '{sekerData[n][x + 1]}')"""
                     cursor.execute(to_exe)
                     cursor.commit()
+        return "done"
     
 
     def enter_new_agent(username, psw, cellphone):
