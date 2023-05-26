@@ -11,7 +11,7 @@ clients = []
 LINE = r'\r\n'
 current_page = ''
 C_PATH  = r"C:\Users\weiss4\Desktop\Roni\Cyber\12th-year-final-project\certificate\certificate.pem"
-K_PATH  = r"C:\Users\weiss4\Desktop\Roni\Cyber\12th-year-final-project\certificate\private.key"
+K_PATH  = r"C:\Users\weiss4\Desktop\Roni\Cyber\12th-year-final-project\certificate\private_key.pem"
 
 
 
@@ -243,14 +243,15 @@ def main():
     server = socket.socket()
     ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     ssl_context.load_cert_chain(certfile=C_PATH, keyfile=K_PATH)
-    sserver = ssl_context.wrap_socket(server, server_side=True)
 
-    sserver.bind(IP_PORT)
-    sserver.listen(100)
+    server.bind(IP_PORT)
+    server.listen(100)
     i = 0
     while i < 100:
-        c, add = sserver.accept()
-        t = threading.Thread(target=handle_client, args=(c,add, i))
+        c, add = server.accept()
+        print(add)
+        sc = ssl_context.wrap_socket(c, server_side=True)
+        t = threading.Thread(target=handle_client, args=(sc,add, i))
         t.start()
         clients.append(t)
         i += 1
