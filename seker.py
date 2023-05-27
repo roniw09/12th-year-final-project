@@ -150,8 +150,8 @@ def create_seker(client, cookie):
                         <td><input type="number" name="c3i5value"  form="seker" /></td>
                     </tr>
                 </table>  
-                <button type="submit" form="seker">הגש טופס</button>
             </div>
+            <button type="submit" form="seker">הגש טופס</button>
 
             <script>
                 function openChapter(evt, chapterName) {

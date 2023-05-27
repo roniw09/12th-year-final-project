@@ -6,7 +6,7 @@ from createPages import CreatePages
 from chat import *
 from seker import *
 
-IP_PORT = ('0.0.0.0', 443)
+IP_PORT = ('0.0.0.0', 807)
 clients = []
 LINE = r'\r\n'
 current_page = ''
@@ -240,24 +240,44 @@ def main():
     """
         main loop
     """
-    server = socket.socket()
-    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    ssl_context.load_cert_chain(certfile=C_PATH, keyfile=K_PATH)
+    # server = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+    
 
-    server.bind(IP_PORT)
-    server.listen(100)
-    i = 0
-    while i < 100:
-        c, add = server.accept()
-        print(add)
-        sc = ssl_context.wrap_socket(c, server_side=True)
-        t = threading.Thread(target=handle_client, args=(sc,add, i))
-        t.start()
-        clients.append(t)
-        i += 1
+    # with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
+    #     sock.bind(IP_PORT)
+    #     sock.listen(5)
+    #     with context.wrap_socket(sock, server_side=True) as sserver:
+    #         i = 0
+    #         while i < 100:
+    #             c, add = sserver.accept()
+    #             print(add)
+    #             t = threading.Thread(target=handle_client, args=(c,add, i))
+    #             t.start()
+    #             clients.append(t)
+    #             i += 1
 
-    sserver.close()
-    pass
+    # server.close()
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+
+    C_PATH1  = r"C:\Users\weiss4\Desktop\Roni\Cyber\12th-year-final-project\certificate\certificate.crt"
+    K_PATH1  = r"C:\Users\weiss4\Desktop\Roni\Cyber\12th-year-final-project\certificate\roni-doron.key"
+    context.load_cert_chain(C_PATH1, K_PATH1)
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
+        sock.bind(('127.0.0.1', 804))
+        sock.listen(5)
+        with context.wrap_socket(sock, server_side=True) as ssock:
+            while True:
+                    try:
+                        conn, addr = ssock.accept()
+                        print(conn, addr)
+                    except Exception as e:
+                        print("errr", e) 
+                        pass
+                    finally:
+                        conn.close()
+
+        # sock.close()
 
 
 if __name__ == '__main__':
