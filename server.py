@@ -6,7 +6,7 @@ from createPages import CreatePages
 from chat import *
 from seker import *
 
-IP_PORT = ('0.0.0.0', 807)
+IP_PORT = ('0.0.0.0', 805)
 clients = []
 LINE = r'\r\n'
 current_page = ''
@@ -227,6 +227,7 @@ def handle_client(c_sock, address, id):
     """
     i = 0
     data = c_sock.recv(1024).decode()
+    print(data)
     print("CURRENT REQUEST:\n",data)
     cookie = data.split('\r\n')[-3].split()
     fields = data.split('\r\n')[0].split()
@@ -264,18 +265,21 @@ def main():
     context.load_cert_chain(C_PATH1, K_PATH1)
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
-        sock.bind(('127.0.0.1', 804))
-        sock.listen(5)
+        sock.bind(IP_PORT)
+        sock.listen(100)
         with context.wrap_socket(sock, server_side=True) as ssock:
-            while True:
+            i = 0
+            while i < 100:
                     try:
-                        conn, addr = ssock.accept()
-                        print(conn, addr)
+                        c, add = ssock.accept()
+                        print(add)
+                        t = threading.Thread(target=handle_client, args=(c,add, i))
+                        t.start()
+                        clients.append(t)
+                        i += 1
                     except Exception as e:
                         print("errr", e) 
                         pass
-                    finally:
-                        conn.close()
 
         # sock.close()
 
