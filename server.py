@@ -6,7 +6,7 @@ from createPages import CreatePages
 from chat import *
 from seker import *
 
-IP_PORT = ('0.0.0.0', 443)
+IP_PORT = ('0.0.0.0', 806)
 clients = []
 LINE = r'\r\n'
 current_page = ''
@@ -191,7 +191,7 @@ def build_answer(fields, cookie):
                 if '05' in details[0]:
                     details = details[0] + '-' + details[1]
                 user = validate_user(details)
-                if user == 'ERR1':
+                if user == 'ERR1': 
                     web = '/Error.html'
                 elif user[0] == 'ap':
                     CreatePages.validated_appraiser_page(user[1])
@@ -200,8 +200,9 @@ def build_answer(fields, cookie):
                 fields = ['', web]
             elif 'selected' in fields[1]:
                 web, dateSelected, timeSelected = extract_date(fields[1])
+                print(dateSelected)
                 ORM.updateCliSekerDate(dateSelected, timeSelected, cookie[-1].split('=')[-1])
-                fields = ['' ,'/appraiserSpace.html']
+                fields = ['' ,'/clientSpace.html']
             elif 'sekerFill' in fields[1]:
                 cli_id = fields[1][1:].split('?')[1].split('=')[1]
                 create_seker(cli_id, cookie)
@@ -243,7 +244,7 @@ def main():
     server = socket.socket()
     ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
     ssl_context.load_cert_chain(certfile=C_PATH, keyfile=K_PATH)
-
+    
     server.bind(IP_PORT)
     server.listen(100)
     i = 0
@@ -256,7 +257,7 @@ def main():
         clients.append(t)
         i += 1
 
-    sserver.close()
+    server.close()
     pass
 
 

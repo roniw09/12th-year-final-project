@@ -39,7 +39,7 @@ class ORM:
         conn = pyodbc.connect(r'Driver={Microsoft Access Driver (*.mdb)};DBQ=' +PATH + r'\DemiDB.mdb')
         cursor = conn.cursor()
 
-        cursor.execute(f"""update Seker set ExeDay = {day} where ClientId = {cliID}""")
+        cursor.execute(f"""update Seker set ExeDay = '{day}' where ClientId = {cliID}""")
         conn.commit()
     
     def get_employee_data(uname, psw):
